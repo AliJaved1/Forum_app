@@ -1,0 +1,2 @@
+## Project Description
+The project is a forum-style website with the purpose of communication between like-minded individuals about various topics. The application domain is multi-purpose social media, social interaction, and news collections, where users will interact with each other through post-comment and comment-comment relationships. The more a member uses the application, the greater amount of influence they gain within the application and the more they can influence the popularity of other user content. 
