@@ -9,6 +9,14 @@ import { UserActionViewComponent } from './user-action-view/user-action-view.com
 import { ContentViewComponent } from './content-view/content-view.component';
 import { UserInfoViewComponent } from './user-info-view/user-info-view.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonModule} from "@angular/material/button";
+import {MatTabsModule} from "@angular/material/tabs";
+import { PostListViewComponent } from './content-view/post-list-view/post-list-view.component';
+import { PostViewComponent } from './content-view/post-view/post-view.component';
+import { ContentOptionViewComponent } from './content-view/content-option-view/content-option-view.component';
+import {MatChipsModule} from "@angular/material/chips";
 
 @NgModule({
   declarations: [
@@ -17,13 +25,21 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     LogoViewComponent,
     UserActionViewComponent,
     ContentViewComponent,
-    UserInfoViewComponent
+    UserInfoViewComponent,
+    PostListViewComponent,
+    PostViewComponent,
+    ContentOptionViewComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTabsModule,
+        MatChipsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
