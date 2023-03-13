@@ -17,6 +17,9 @@ import { PostListViewComponent } from './content-view/post-list-view/post-list-v
 import { PostViewComponent } from './content-view/post-view/post-view.component';
 import { ContentOptionViewComponent } from './content-view/content-option-view/content-option-view.component';
 import {MatChipsModule} from "@angular/material/chips";
+import {MatCardModule} from "@angular/material/card";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatListModule} from "@angular/material/list";
 
 @NgModule({
   declarations: [
@@ -30,16 +33,19 @@ import {MatChipsModule} from "@angular/material/chips";
     PostViewComponent,
     ContentOptionViewComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatTabsModule,
-        MatChipsModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTabsModule,
+    MatChipsModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatListModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })
