@@ -4,6 +4,7 @@ import {Attachment, dummyAttachment} from "./Attachment";
 export interface Post extends UserContent {
   title: string;
   authorVid: string;
+  authorName: string;
   attachments: Attachment[];
 }
 
@@ -12,6 +13,7 @@ export function dummyPost(): Post {
     cid: "123",
     title: "Dummy Post",
     authorVid: "123",
+    authorName: "Dummy Author",
     attachments: [dummyAttachment()]
   };
 }

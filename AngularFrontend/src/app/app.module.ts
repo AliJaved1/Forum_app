@@ -14,12 +14,13 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTabsModule} from "@angular/material/tabs";
 import { PostListViewComponent } from './content-view/post-list-view/post-list-view.component';
-import { PostViewComponent } from './content-view/post-view/post-view.component';
+import { PostViewComponent } from './parts/post-view/post-view.component';
 import { ContentOptionViewComponent } from './content-view/content-option-view/content-option-view.component';
 import {MatChipsModule} from "@angular/material/chips";
 import {MatCardModule} from "@angular/material/card";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatListModule} from "@angular/material/list";
+import { UserViewComponent } from './parts/user-view/user-view.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {MatListModule} from "@angular/material/list";
     UserInfoViewComponent,
     PostListViewComponent,
     PostViewComponent,
-    ContentOptionViewComponent
+    ContentOptionViewComponent,
+    UserViewComponent
   ],
   imports: [
     BrowserModule,
