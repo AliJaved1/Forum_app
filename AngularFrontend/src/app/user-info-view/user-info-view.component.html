@@ -1,1 +1,15 @@
-<app-user-view></app-user-view>
+<app-user-view [matMenuTriggerFor]="menu"></app-user-view>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>
+    <mat-icon>account_circle</mat-icon>
+    <span>My profile</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>bookmark</mat-icon>
+    <span>Saved posts</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon>priority_high</mat-icon>
+    <span>Notifications</span>
+  </button>
+</mat-menu>

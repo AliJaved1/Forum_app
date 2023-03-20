@@ -21,6 +21,7 @@ import {MatCardModule} from "@angular/material/card";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatListModule} from "@angular/material/list";
 import { UserViewComponent } from './parts/user-view/user-view.component';
+import {MatMenuModule} from "@angular/material/menu";
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { UserViewComponent } from './parts/user-view/user-view.component';
     MatChipsModule,
     MatCardModule,
     MatProgressBarModule,
-    MatListModule
+    MatListModule,
+    MatMenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]
