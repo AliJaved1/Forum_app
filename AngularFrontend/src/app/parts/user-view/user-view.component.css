@@ -6,5 +6,9 @@ main{
 #user-info-wrapper{
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+}
+
+button{
+  border-radius: 100px;
 }

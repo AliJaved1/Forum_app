@@ -29,6 +29,10 @@ import { NewPostViewComponent } from './parts/post-view/new-post-view/new-post-v
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { AttachmentViewComponent } from './parts/post-view/attachment-view/attachment-view.component';
 import { FigureViewComponent } from './parts/figure-view/figure-view.component';
+import { LikeDislikeViewComponent } from './parts/post-view/like-dislike-view/like-dislike-view.component';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatInputModule} from "@angular/material/input";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -47,6 +51,7 @@ import { FigureViewComponent } from './parts/figure-view/figure-view.component';
     NewPostViewComponent,
     AttachmentViewComponent,
     FigureViewComponent,
+    LikeDislikeViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +68,9 @@ import { FigureViewComponent } from './parts/figure-view/figure-view.component';
     MatMenuModule,
     MatDialogModule,
     MatBottomSheetModule,
+    MatButtonToggleModule,
+    MatInputModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

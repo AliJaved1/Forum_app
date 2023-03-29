@@ -12,4 +12,14 @@ export class PerceptionBarViewComponent {
   barPercentage(): number {
     return this.perception * 100;
   }
+
+  barColor(): string {
+    if (this.engagement < 0.3) {
+      return 'warn';
+    } else if (this.engagement > 0.6) {
+      return 'primary';
+    } else {
+      return 'accent';
+    }
+  }
 }

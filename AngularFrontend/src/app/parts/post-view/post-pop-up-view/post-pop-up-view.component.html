@@ -1,11 +1,18 @@
-<app-perception-bar-view [perception]="post.perception" [engagement]="post.engagement"></app-perception-bar-view>
-<div mat-dialog-title>
-  {{post.title}}
-  <app-user-view [vID]="post.authorVid"></app-user-view>
-</div>
-<mat-dialog-content class="mat-typography">
-  <div *ngFor="let attachment of post.attachments">
-    <app-attachment-view [attachment]="attachment"></app-attachment-view>
-  </div>
+<main>
+  <app-perception-bar-view [perception]="post.perception" [engagement]="post.engagement"></app-perception-bar-view>
+  <div mat-dialog-title>
+    {{post.title}}
+    <div style="display: flex; align-items: center">
+      <app-user-view [vID]="post.authorVid"></app-user-view>
+      <div style="flex: 1; min-width: 20px"></div>
+      <app-like-dislike-view [cid]="post.cid"></app-like-dislike-view>
+    </div>
 
-</mat-dialog-content>
+
+  </div>
+  <mat-dialog-content class="mat-typography">
+    <div *ngFor="let attachment of post.attachments">
+      <app-attachment-view [attachment]="attachment"></app-attachment-view>
+    </div>
+  </mat-dialog-content>
+</main>
