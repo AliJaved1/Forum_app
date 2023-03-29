@@ -22,6 +22,13 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatListModule} from "@angular/material/list";
 import { UserViewComponent } from './parts/user-view/user-view.component';
 import {MatMenuModule} from "@angular/material/menu";
+import { PostPopUpViewComponent } from './parts/post-view/post-pop-up-view/post-pop-up-view.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import { PerceptionBarViewComponent } from './parts/post-view/perception-bar-view/perception-bar-view.component';
+import { NewPostViewComponent } from './parts/post-view/new-post-view/new-post-view.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { AttachmentViewComponent } from './parts/post-view/attachment-view/attachment-view.component';
+import { FigureViewComponent } from './parts/figure-view/figure-view.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +41,12 @@ import {MatMenuModule} from "@angular/material/menu";
     PostListViewComponent,
     PostViewComponent,
     ContentOptionViewComponent,
-    UserViewComponent
+    UserViewComponent,
+    PostPopUpViewComponent,
+    PerceptionBarViewComponent,
+    NewPostViewComponent,
+    AttachmentViewComponent,
+    FigureViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,7 +60,9 @@ import {MatMenuModule} from "@angular/material/menu";
     MatCardModule,
     MatProgressBarModule,
     MatListModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDialogModule,
+    MatBottomSheetModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

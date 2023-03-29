@@ -1,7 +1,5 @@
 export interface CustomFigure{
   fid: string;
-  height: number;
-  width: number;
   data: number[][]
 }
 
@@ -17,8 +15,6 @@ export function dummyCustomFigure(w:number,h:number): CustomFigure {
   }
   return {
     fid: "fid " + w + " " + h,
-    height: h,
-    width: w,
     data: dummyData
   };
 }

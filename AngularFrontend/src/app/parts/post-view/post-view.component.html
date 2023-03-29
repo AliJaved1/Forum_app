@@ -1,16 +1,13 @@
-<main>
+<main (click)="showMessageView()">
   <mat-card class="example-card">
     <mat-card-header>
       <mat-card-title>{{post.title}}</mat-card-title>
       <mat-card-subtitle>{{post.authorName}}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p>{{post.attachments[0].content}}</p>
+      <p id="content-preview">{{post.attachments[0].content}}</p>
       <mat-divider></mat-divider>
     </mat-card-content>
-    <mat-card-actions>
-      <button mat-button>LIKE</button>
-      <button mat-button>SHARE</button>
-    </mat-card-actions>
+    <app-perception-bar-view [perception]="post.perception" [engagement]="post.engagement"></app-perception-bar-view>
   </mat-card>
 </main>

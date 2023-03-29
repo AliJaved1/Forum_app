@@ -1,1 +1,8 @@
-<button mat-stroked-button>{{user.name}}</button>
+<main>
+  <button mat-stroked-button>
+    <div id="user-info-wrapper">
+      <app-figure-view [fid]="user.thumbnailID" [height]="25" [width]="25"></app-figure-view>
+      <span style="font-size: 20px">{{user.name}}</span>
+    </div>
+  </button>
+</main>
