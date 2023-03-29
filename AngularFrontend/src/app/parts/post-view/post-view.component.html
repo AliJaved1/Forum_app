@@ -4,9 +4,14 @@
       <mat-card-title>{{post.title}}</mat-card-title>
       <mat-card-subtitle>{{post.authorName}}</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
-      <p id="content-preview">{{post.attachments[0].content}}</p>
-      <mat-divider></mat-divider>
+    <mat-card-content style="margin-top: 5px">
+      <ng-container *ngFor="let a of post.attachments.slice(0, 2)">
+        <mat-icon *ngIf="a.type == 'image'">image</mat-icon>
+        <mat-icon *ngIf="a.type == 'video'">videocam</mat-icon>
+        <mat-icon *ngIf="a.type == 'link'">link</mat-icon>
+        <p *ngIf="a.type == 'text'" id="content-preview">{{a.content}}</p>
+      </ng-container>
+      <mat-divider style="margin-bottom: 10px"></mat-divider>
     </mat-card-content>
     <app-perception-bar-view [perception]="post.perception" [engagement]="post.engagement"></app-perception-bar-view>
   </mat-card>

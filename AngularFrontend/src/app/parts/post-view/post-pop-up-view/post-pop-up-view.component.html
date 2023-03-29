@@ -14,5 +14,6 @@
     <div *ngFor="let attachment of post.attachments">
       <app-attachment-view [attachment]="attachment"></app-attachment-view>
     </div>
+    <app-comments-view [cid]="post.cid"></app-comments-view>
   </mat-dialog-content>
 </main>

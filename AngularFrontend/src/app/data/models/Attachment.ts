@@ -1,7 +1,6 @@
 export interface Attachment {
   attid: string;
-  type: string
-; // "image" or "link" or "video" or "text"
+  type: string; // "image" or "link" or "video" or "text"
   content: string;
 }
 
@@ -41,4 +40,12 @@ export function dummyAttachment(): Attachment {
     type: "text",
     content: content
   };
+}
+
+export function dummyAttachments(n: number): Attachment[] {
+  let result = [];
+  for (let i = 0; i < n; i++) {
+    result.push(dummyAttachment())
+  }
+  return result;
 }

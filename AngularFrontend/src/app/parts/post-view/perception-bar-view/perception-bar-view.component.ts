@@ -15,9 +15,9 @@ export class PerceptionBarViewComponent {
 
   barColor(): string {
     if (this.engagement < 0.3) {
-      return 'warn';
-    } else if (this.engagement > 0.6) {
       return 'primary';
+    } else if (this.engagement > 0.6) {
+      return 'warn';
     } else {
       return 'accent';
     }
