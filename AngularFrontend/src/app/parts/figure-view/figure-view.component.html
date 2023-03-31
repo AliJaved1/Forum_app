@@ -1,0 +1,5 @@
+<main [ngStyle]="{height: heightInPixels()}">
+  <div class="row" [ngStyle]="{width: widthInPixels()}" *ngFor="let rowData of data">
+    <div class="pixel" *ngFor="let pixData of rowData" [ngStyle]="{background: colorForCell(pixData)}"></div>
+  </div>
+</main>

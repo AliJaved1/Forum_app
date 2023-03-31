@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import {NewPostViewComponent} from "../parts/post-view/new-post-view/new-post-view.component";
 
 @Component({
   selector: 'app-user-action-view',
@@ -6,5 +8,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./user-action-view.component.css']
 })
 export class UserActionViewComponent {
+  constructor(private _bottomSheet: MatBottomSheet) {}
 
+  openBottomSheet(): void {
+    this._bottomSheet.open(NewPostViewComponent);
+  }
 }

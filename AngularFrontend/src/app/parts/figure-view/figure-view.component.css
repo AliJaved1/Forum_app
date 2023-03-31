@@ -1,0 +1,13 @@
+main{
+  display: flex;
+  flex-direction: column;
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+}
+.pixel{
+  width: 100%;
+  aspect-ratio: 1;
+}

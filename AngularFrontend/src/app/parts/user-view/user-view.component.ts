@@ -9,4 +9,11 @@ import {dummyUser, User} from "../../data/models/User";
 export class UserViewComponent {
   @Input() vID: string = "123";
   user: User = dummyUser();
+  loadFigure = false;
+
+  constructor() {
+    setTimeout(() => {
+      this.loadFigure = true;
+    }, 400);
+  }
 }

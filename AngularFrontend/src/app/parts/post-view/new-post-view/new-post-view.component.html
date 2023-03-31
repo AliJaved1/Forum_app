@@ -1,0 +1,63 @@
+<main>
+  <mat-form-field class="example-full-width">
+    <mat-label>Title</mat-label>
+    <input type="text" matInput [formControl]="titleFormControl" [errorStateMatcher]="matcher"
+           placeholder="Ex. my first post">
+    <mat-error *ngIf="titleFormControl.hasError('required')">
+      Title is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+
+
+  <div cdkDropList *ngIf="attachments.length>0" id="attachments-preview" class="draggable-list"
+       (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let attachment of attachments; index as i" class="draggable-box" cdkDrag>
+      <div class="drag-placeholder" *cdkDragPlaceholder></div>
+      <div style="display: flex; align-items: center;gap: 10px; width: 100%">
+        <button mat-mini-fab color="warn" (click)="removeAttachment(i)">
+          <mat-icon>remove</mat-icon>
+        </button>
+        <app-attachment-view [attachment]="attachment"></app-attachment-view>
+        <!--        <div style="flex: 1"></div>-->
+        <!--        <mat-icon cdkDragHandle>drag_handle</mat-icon>-->
+      </div>
+      <div class="handle" cdkDragHandle>
+        <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
+          <path d="M0 0h24v24H0z" fill="none"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <mat-card-title>Add new component</mat-card-title>
+    <div style="display: flex; align-items: center; margin-bottom: 10px">
+      <mat-button-toggle-group [(ngModel)]="newAttachmentType" name="fontStyle" aria-label="Font Style">
+        <mat-button-toggle value="text">Text</mat-button-toggle>
+        <mat-button-toggle value="image">Image</mat-button-toggle>
+        <mat-button-toggle value="video">Video</mat-button-toggle>
+        <mat-button-toggle value="link">Link</mat-button-toggle>
+      </mat-button-toggle-group>
+      <div style="flex: 1"></div>
+      <button mat-fab color="warn" (click)="addAttachment()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <mat-form-field *ngIf="newAttachmentType == 'text'">
+      <mat-label>Content</mat-label>
+      <textarea matInput placeholder="Ex. I saw..." [(ngModel)]="newAttachmentContent"></textarea>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="newAttachmentType != 'text'">
+      <mat-label>Link</mat-label>
+      <input matInput type="link" [(ngModel)]="newAttachmentContent">
+    </mat-form-field>
+  </div>
+
+  <div style="display: flex">
+    <div style="flex: 1"></div>
+    <button mat-raised-button color="primary">Post!</button>
+  </div>
+</main>

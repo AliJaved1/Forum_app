@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-content-view',
@@ -6,5 +6,4 @@ import { Component } from '@angular/core';
   styleUrls: ['./content-view.component.css']
 })
 export class ContentViewComponent {
-
 }

@@ -1,0 +1,10 @@
+<main>
+  <div style="display: flex; align-items: center; margin-bottom: 5px">
+    <span>{{comment.authorName}}</span>:
+    <span>{{comment.content}}</span>
+    <div style="flex: 1"></div>
+    <app-like-dislike-view [cid]="comment.cid"></app-like-dislike-view>
+  </div>
+  <app-perception-bar-view [engagement]="comment.engagement"
+                           [perception]="comment.perception"></app-perception-bar-view>
+</main>

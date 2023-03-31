@@ -1,4 +1,13 @@
 <main>
-  <app-post-view *ngFor="let postID of postIDs" [postID]="postID"></app-post-view>
-  <div class="spacer"></div>
+  <div *ngIf="wideMode" id="wideMode">
+    <div class="postsCol">
+      <app-post-view *ngFor="let postID of evenIndexPostIDs()" [postID]="postID"></app-post-view>
+    </div>
+    <div class="postsCol">
+      <app-post-view *ngFor="let postID of oddIndexPostIDs()" [postID]="postID"></app-post-view>
+    </div>
+  </div>
+  <div *ngIf="!wideMode" class="postsCol">
+      <app-post-view *ngFor="let postID of postIDs" [postID]="postID"></app-post-view>
+  </div>
 </main>

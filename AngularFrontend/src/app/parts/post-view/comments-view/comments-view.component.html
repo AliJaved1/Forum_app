@@ -1,0 +1,19 @@
+<main>
+  <div>
+
+  </div>
+  <div style="display: flex; gap: 5px; flex-direction: column; margin-top: 2em">
+    <mat-divider></mat-divider>
+
+    <mat-form-field *ngIf="isMakingNewComment">
+      <mat-label>Comment</mat-label>
+      <textarea matInput placeholder="Ex. I think..." [(ngModel)]="newComment"></textarea>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="clickOnComment()">Comment</button>
+
+    <div *ngFor="let comment of comments">
+      <app-single-comment-view [comment]="comment"></app-single-comment-view>
+    </div>
+  </div>
+</main>
