@@ -1,6 +1,6 @@
 <main>
   <div *ngIf="attachment.type === 'image'">
-    <img [src]="attachment.content" alt=""/>
+    <img style="max-width: 100%" [src]="attachment.content" alt=""/>
   </div>
   <div *ngIf="attachment.type === 'video'" style="display: flex; align-items: center">
     <!--    <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player"-->

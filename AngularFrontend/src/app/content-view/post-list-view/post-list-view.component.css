@@ -1,7 +1,20 @@
-main {
+main{
+  display: flex;
+  justify-content: center;
+}
+
+.postsCol {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: space-around;
   gap: 10px;
+}
+
+#wideMode {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 12px;
 }
