@@ -263,7 +263,30 @@ router.route('/comment').post(function (request, response) {
 });
 
 // Delete comment
+router.route('/comment/:cid').delete(function (request, response) {
+    console.log("DELETE COMMENT ID:" + request.params.id);
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
 
+        var coid = request.params.id;
+        connection.execute("DELETE FROM UserComment WHERE coid = :coid",
+            [coid],
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error deleting comment from DB");
+                    doRelease(connection);
+                    return;
+                }
+                response.end();
+                doRelease(connection);
+            });
+    });
+});
 // Edit a post (UPDATE)
 
 // Return usernames (Projection)
