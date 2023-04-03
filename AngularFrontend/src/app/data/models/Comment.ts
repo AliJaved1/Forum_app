@@ -2,7 +2,7 @@ import {Attachment} from "./Attachment";
 import {randomWord} from "./helpers";
 
 export interface Comment {
-  cid: string;
+  cid: string; // needs to be changed to coid, same name as the userContent id
   authorVid: string;
   authorName: string;
   postTime: string;
