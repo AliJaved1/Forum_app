@@ -1,4 +1,7 @@
 <main>
+  <div id="loading" *ngIf="postIDs.length == 0">
+    <mat-spinner></mat-spinner>
+  </div>
   <div *ngIf="wideMode" id="wideMode">
     <div class="postsCol">
       <app-post-view *ngFor="let postID of evenIndexPostIDs()" [postID]="postID"></app-post-view>

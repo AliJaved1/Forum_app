@@ -8,9 +8,9 @@ export interface User {
 }
 
 export function dummyUser(): User {
-      return {
-        vid: "123",
-        isMember: true,
+  return {
+    vid: "123",
+    isMember: true,
     isAdministrator: true,
     name: "Dummy User",
     experience: 123,

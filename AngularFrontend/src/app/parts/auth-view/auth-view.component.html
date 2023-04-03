@@ -1,0 +1,18 @@
+<main>
+
+  <mat-card-title style="margin-bottom: 5px">Log in</mat-card-title>
+  <mat-form-field>
+    <mat-label>id</mat-label>
+    <input matInput [(ngModel)]="id">
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input matInput [(ngModel)]="password">
+  </mat-form-field>
+
+  <button mat-fab color="primary" mat-dialog-close = "" (click)="login()">
+    <mat-icon>login</mat-icon>
+  </button>
+
+</main>

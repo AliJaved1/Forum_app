@@ -1,3 +1,5 @@
+import {randomWord} from "./helpers";
+
 export interface Attachment {
   attid: string;
   type: string; // "image" or "link" or "video" or "text"
@@ -18,7 +20,7 @@ export function dummyAttachment(): Attachment {
     return {
       attid: "attid",
       type: "link",
-      content: "https://www.google.com"
+      content: "https://www.apple.com"
     };
   }
   if (randNum == 2) {
@@ -32,7 +34,7 @@ export function dummyAttachment(): Attachment {
 
   let content: string = "";
   for (let i = 0; i < 50; i++) {
-    content += Math.random().toString(36).substring(2) + " ";
+    content += randomWord() + " ";
   }
 
   return {

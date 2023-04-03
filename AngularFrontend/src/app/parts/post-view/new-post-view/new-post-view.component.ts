@@ -4,6 +4,9 @@ import {FormControl, FormGroupDirective, NgForm, Validators} from "@angular/form
 import {ErrorStateMatcher} from "@angular/material/core";
 import {Attachment, dummyAttachment, dummyAttachments} from "../../../data/models/Attachment";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
+import {MainService} from "../../../data/main.service";
+import {Post} from "../../../data/models/Post";
+import {AuthService} from "../../../data/auth.service";
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -18,8 +21,9 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 })
 
 export class NewPostViewComponent {
-  constructor(private _bottomSheetRef: MatBottomSheetRef<NewPostViewComponent>) {
+  constructor(private _bottomSheetRef: MatBottomSheetRef<NewPostViewComponent>, private mainService: MainService, private auth: AuthService) {
   }
+
 
   matcher = new MyErrorStateMatcher();
   titleFormControl = new FormControl('', [Validators.required, Validators.maxLength(30)]);
@@ -45,5 +49,14 @@ export class NewPostViewComponent {
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.attachments, event.previousIndex, event.currentIndex);
+  }
+
+  submitPost(){
+    let newPost: Post = {
+      authorName: "", authorVid: this.auth.selfVid, cid: "", engagement: 0, perception: 0, postTime: "",
+      title: this.title,
+      attachments: this.attachments
+    }
+    this.mainService.postPost(newPost);
   }
 }

@@ -1,5 +1,6 @@
 <main>
-  <button mat-stroked-button>
+  <mat-progress-bar mode="indeterminate" color="warn"  *ngIf="vID == ''" style="width: 100px"></mat-progress-bar>
+  <button mat-stroked-button *ngIf="vID != ''">
     <div id="user-info-wrapper">
       <app-figure-view *ngIf="loadFigure" [fid]="user.thumbnailID" [height]="20" [width]="20"></app-figure-view>
       <span style="font-size: 17px;font-weight: lighter">{{user.name}}</span>

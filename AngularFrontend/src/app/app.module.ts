@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
+import {HttpClientModule} from "@angular/common/http";
 import {AppComponent} from './app.component';
 import {MainViewComponent} from './main-view/main-view.component';
 import {LogoViewComponent} from './logo-view/logo-view.component';
@@ -38,6 +39,8 @@ import {CommentsViewComponent} from './parts/post-view/comments-view/comments-vi
 import {
   SingleCommentViewComponent
 } from './parts/post-view/comments-view/single-comment-view/single-comment-view.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { AuthViewComponent } from './parts/auth-view/auth-view.component';
 
 @NgModule({
   declarations: [
@@ -59,31 +62,34 @@ import {
     LikeDislikeViewComponent,
     CommentsViewComponent,
     SingleCommentViewComponent,
+    AuthViewComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTabsModule,
-    MatChipsModule,
-    MatCardModule,
-    MatProgressBarModule,
-    MatListModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatBottomSheetModule,
-    MatButtonToggleModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    CdkDropList,
-    CdkDrag,
-    CdkDragPlaceholder,
-    FormsModule,
-    CdkDragHandle,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTabsModule,
+        MatChipsModule,
+        MatCardModule,
+        MatProgressBarModule,
+        MatListModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatBottomSheetModule,
+        MatButtonToggleModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        CdkDropList,
+        CdkDrag,
+        CdkDragPlaceholder,
+        FormsModule,
+        CdkDragHandle,
+        HttpClientModule,
+        MatProgressSpinnerModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -1,4 +1,6 @@
 import {Attachment, dummyAttachment} from "./Attachment";
+import {dummyUser} from "./User";
+import {randomWord} from "./helpers";
 
 export interface Post {
   cid: string;
@@ -13,7 +15,7 @@ export interface Post {
 
 export function dummyPost(): Post {
 
-  let numberOfAttachments = Math.ceil(Math.random() * 10)+4;
+  let numberOfAttachments = Math.ceil(Math.random() * 10) + 4;
   let attachments: Attachment[] = [];
   for (let i = 0; i < numberOfAttachments; i++) {
     attachments.push(dummyAttachment());
@@ -21,9 +23,9 @@ export function dummyPost(): Post {
 
   return {
     cid: "123",
-    title: Math.random().toString(36).substring(2) + " ",
-    authorVid: Math.round(Math.random()*100)+"",
-    authorName: Math.random().toString(36).substring(2) + " ",
+    title: randomWord() + " " + randomWord() + " " + randomWord(),
+    authorVid: Math.round(Math.random() * 100) + "",
+    authorName: dummyUser().name,
     postTime: "2019-01-01T00:00:00.000Z",
     engagement: Math.random(),
     perception: Math.random(),

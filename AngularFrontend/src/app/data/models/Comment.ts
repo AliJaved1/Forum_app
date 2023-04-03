@@ -1,4 +1,5 @@
 import {Attachment} from "./Attachment";
+import {randomWord} from "./helpers";
 
 export interface Comment {
   cid: string;
@@ -13,12 +14,12 @@ export interface Comment {
 export function dummyComment(): Comment {
   return {
     cid: "123",
-    authorVid: Math.round(Math.random()*100)+"",
-    authorName: Math.random().toString(36).substring(2) + " ",
-    postTime: "2019-01-01T00:00:00.000Z",
+    authorVid: randomWord(),
+    authorName: randomWord()+" "+randomWord(),
+    postTime: "",
     engagement: Math.random(),
     perception: Math.random(),
-    content: Math.random().toString(36).substring(2) + " "
+    content: randomWord()+" "+randomWord()+" "+randomWord()
   };
 }
 

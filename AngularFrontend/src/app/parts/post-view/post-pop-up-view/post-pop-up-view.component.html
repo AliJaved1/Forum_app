@@ -4,6 +4,15 @@
     {{post.title}}
     <div style="display: flex; align-items: center">
       <app-user-view [vID]="post.authorVid"></app-user-view>
+      <ng-container *ngIf="post.authorVid != auth.selfVid">
+        <div style="width: 10px"></div>
+        <button mat-icon-button (click)="editPost()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="deletePost()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </ng-container>
       <div style="flex: 1; min-width: 20px"></div>
       <app-like-dislike-view [cid]="post.cid"></app-like-dislike-view>
     </div>

@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {AuthService} from "../../../data/auth.service";
+import {MainService} from "../../../data/main.service";
 
 @Component({
   selector: 'app-like-dislike-view',
@@ -12,7 +13,15 @@ export class LikeDislikeViewComponent {
   voted = false;
   liked = false;
 
-  constructor(authService: AuthService) {
-    this.vid = authService.self.vid;
+  constructor(authService: AuthService, private mainService: MainService) {
+    this.vid = authService.selfVid;
+  }
+
+  like() {
+    this.mainService.likeContent(this.cid, this.vid);
+  }
+
+  dislike() {
+    this.mainService.dislikeContent(this.cid, this.vid);
   }
 }
