@@ -3,6 +3,7 @@ import {dummyPost, Post} from "../../data/models/Post";
 import {MatDialog} from "@angular/material/dialog";
 import {PostPopUpViewComponent} from "./post-pop-up-view/post-pop-up-view.component";
 import {CommonModule} from "@angular/common";
+import {MainService} from "../../data/main.service";
 
 @Component({
   selector: 'app-post-view',
@@ -11,10 +12,16 @@ import {CommonModule} from "@angular/common";
 })
 export class PostViewComponent {
   @Input() postID: string = "123";
-  post: Post = dummyPost();
+  post: Post = dummyPost()
 
-  constructor(private dialog: MatDialog) {
-
+  constructor(private dialog: MatDialog, mainService: MainService) {
+    mainService.getPost(this.postID).subscribe(
+      post => {
+        this.post = post;
+      },
+      error => {
+        console.error(error)
+      });
   }
 
   showMessageView() {

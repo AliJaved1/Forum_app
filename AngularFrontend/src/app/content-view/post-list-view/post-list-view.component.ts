@@ -1,4 +1,6 @@
 import {Component, HostListener} from '@angular/core';
+import {MainService} from "../../data/main.service";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-post-list-view',
@@ -6,10 +8,13 @@ import {Component, HostListener} from '@angular/core';
   styleUrls: ['./post-list-view.component.css']
 })
 export class PostListViewComponent {
-  postIDs: string[] = ["123", "456", "789", "78", "12", "45", "23", "63", "4362", "4532", "7644", "6453"];
+  postIDs: string[] = [];
   wideMode = false;
 
-  constructor() {
+  constructor(private mainService: MainService) {
+    mainService.getRecommendPostsCids().subscribe((postIDs: string[]) => {
+      this.postIDs = postIDs;
+    });
     this.onResize(null);
   }
 

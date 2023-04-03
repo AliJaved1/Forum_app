@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {dummyUser, User} from "../../data/models/User";
+import {MainService} from "../../data/main.service";
 
 @Component({
   selector: 'app-user-view',
@@ -11,9 +12,12 @@ export class UserViewComponent {
   user: User = dummyUser();
   loadFigure = false;
 
-  constructor() {
-    setTimeout(() => {
-      this.loadFigure = true;
-    }, 400);
+  constructor(mainService: MainService) {
+    mainService.getUser(this.vID).subscribe(user => {
+      this.user = user;
+      setTimeout(() => {
+        this.loadFigure = true;
+      }, 400);
+    });
   }
 }
