@@ -10,9 +10,9 @@ var PORT = process.env.PORT || 8089;
 var app = express();
 
 var connectionProperties = {
-    user: process.env.DBAAS_USER_NAME || "oracle",
-    password: process.env.DBAAS_USER_PASSWORD || "oracle",
-    connectString: process.env.DBAAS_DEFAULT_CONNECT_DESCRIPTOR || "localhost/xe"
+    user: "ora_ajaved1@stu",
+    password: "a96043765",
+    connectString: "jdbc: oracle: thin:@dbhost.students.cs.ubc.ca: 1522: stu"
 };
 
 function doRelease(connection) {
@@ -293,3 +293,7 @@ router.route('/comment/:cid').delete(function (request, response) {
 // Return usernames (Projection)
 
 // Return users and their posts (Join)
+
+app.use(express.static('static'));
+app.use('/', router);
+app.listen(PORT);
