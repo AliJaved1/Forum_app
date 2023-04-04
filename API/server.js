@@ -176,6 +176,7 @@ router.route('/post').post(function (request, response) {
         // TODO: make sure this reflects actual stuff from frontend
         post = request.body;
 
+        // TODO: make sure values are just cid
         connection.execute("INSERT INTO UserContent (cid)" +
             "VALUES(:cid, :experience, :vid, :time", [post.cid],
             { outFormat: oracledb.OBJECT },

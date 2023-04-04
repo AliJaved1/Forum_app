@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
 import {dummyUser, User} from "./models/User";
 import {HttpClient} from "@angular/common/http";
-import {delay, Observable, of} from "rxjs";
+import {delay, map, Observable, of} from "rxjs";
 import {dummyPost, Post} from "./models/Post";
 import {Attachment, dummyAttachment} from "./models/Attachment";
 import {AuthService} from "./auth.service";
+import {CustomFigure, dummyCustomFigure, to2Dfigure} from "./models/CustomFigure";
+import {CustomFigure1D, dummyCustomFigure1D} from "./models/CustomFigure1D";
 
 @Injectable({
   providedIn: 'root'
@@ -92,5 +94,12 @@ export class MainService {
       return of(dummyAttachment()).pipe(delay(600));
     }
     return this.http.get<Attachment>(this.url + "attachment/" + attid);
+  }
+
+  getCustomFigure(fid:string): Observable<CustomFigure1D> {
+    if (this.testMode) {
+      return of(dummyCustomFigure1D()).pipe(delay(600));
+    }
+    return this.http.get<CustomFigure1D>(this.url + "cf/" + fid)
   }
 }
