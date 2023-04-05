@@ -3,7 +3,6 @@ import {randomWord} from "./helpers";
 export interface User {
   vid: string;
   isMember: boolean;
-  isAdministrator: boolean;
   name: string;
   experience: number;
   thumbnailID: string;
@@ -17,7 +16,6 @@ export function dummyUser(): User {
   return {
     vid: vid,
     isMember: isMember,
-    isAdministrator: false,
     name: randomWord() + " " + randomWord(),
     experience: Math.floor(Math.random() * 100),
     thumbnailID: "123",
@@ -31,7 +29,6 @@ export function dummyUserWithVid(vid:string): User {
   return {
     vid: vid,
     isMember: isMember,
-    isAdministrator: false,
     name: randomWord() + " " + randomWord(),
     experience: Math.floor(Math.random() * 100),
     thumbnailID: "123",

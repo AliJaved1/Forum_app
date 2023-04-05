@@ -28,7 +28,6 @@ export class SignupViewComponent {
     let newUser: User = {
       vid: this.auth.selfVid,
       isMember: true,
-      isAdministrator: false,
       name: this.name,
       experience: 0,
       email: this.email,
