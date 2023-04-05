@@ -22,6 +22,7 @@ export class AuthService {
           this.mainService.makeGuest().subscribe(
             (vID) => {
               this.selfVid = vID;
+              console.log(vID)
             },
             (error) => alert("login as guest also failed: " + error)
           );

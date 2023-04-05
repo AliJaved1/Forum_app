@@ -24,7 +24,7 @@ export function dummyUser(): User {
   };
 }
 
-export function dummyUserWithVid(vid:string): User {
+  export function dummyUserWithVid(vid:string): User {
   let isMember = Math.random() > 0.5;
   return {
     vid: vid,

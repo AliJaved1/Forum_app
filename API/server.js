@@ -103,9 +103,9 @@ router.route('/auth/signup/:password').post(function (request, response) {
             return;
         }
         console.log("After connection");
-
+    
         user = request.body;
-        
+    
         connection.execute("INSERT INTO Member (mid, email, password)" +
             "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
             { outFormat: oracledb.OBJECT },
@@ -117,7 +117,7 @@ router.route('/auth/signup/:password').post(function (request, response) {
                     return;
                 }
             });
-
+    
         connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
@@ -128,7 +128,7 @@ router.route('/auth/signup/:password').post(function (request, response) {
                     return;
                 }
             });
-
+    
         response.json(user.vid);
         doRelease(connection);
     });
@@ -311,14 +311,14 @@ router.route('/post').post(function (request, response) {
             cid = post.cid;
         }
 
-        var date;
-        date = new Date();
-        date = date.getUTCFullYear() + '-' +
-            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2)
+        var date = '22-APR-22';
+        // date = new Date();
+        // date = date.getUTCFullYear() + '-' +
+        //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+        //     ('00' + date.getUTCDate()).slice(-2)
 
-        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
+            connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
+                "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -401,8 +401,8 @@ router.route('/posts/recom/:mode').get(function (request, response) {
             return;
         }
         console.log("After connection");
-
-        connection.execute("SELECT cid FROM UserContent ORDER BY upvotes", {},
+    
+        connection.execute("SELECT cid FROM UserContent", {},
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -414,7 +414,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
                 result.rows.forEach(function (element) {
-                    posts.push(element.vid);
+                    posts.push(element.cid);
                 }, this);
                 response.json(posts);
                 doRelease(connection);
@@ -465,8 +465,9 @@ router.route('/post/:cid').get(function (request, response) {
             return;
         }
         console.log("After connection");
-
+    
         cid = request.params.cid;
+    
 
         connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
             { outFormat: oracledb.OBJECT },
@@ -566,12 +567,12 @@ router.route('/comment').post(function (request, response) {
         comment = request.body;
         cid = uuidv4();
 
-        var date;
-        date = new Date();
-        date = date.getUTCFullYear() + '-' +
-            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2)
-
+        // var date;
+        // date = new Date();
+        // date = date.getUTCFullYear() + '-' +
+        //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+        //     ('00' + date.getUTCDate()).slice(-2)
+        var date = '22-APR-22';
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
             "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, date],
             { outFormat: oracledb.OBJECT },

@@ -14,6 +14,7 @@ export class UserViewComponent {
 
   constructor(mainService: MainService) {
     mainService.getUser(this.vID).subscribe(user => {
+      console.log(user)
       this.user = user;
       setTimeout(() => {
         this.loadFigure = true;
