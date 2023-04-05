@@ -18,7 +18,8 @@ export class LikeDislikeViewComponent {
   }
 
   like() {
-    this.mainService.likeContent(this.cid, this.vid);
+    this.mainService.likeContent(this.cid);
+    // this.mainService.likeContent(this.cid, this.vid);
   }
 
   dislike() {

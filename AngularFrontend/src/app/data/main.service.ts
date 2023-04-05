@@ -13,7 +13,7 @@ import {dummyComment} from "./models/Comment";
   providedIn: 'root'
 })
 export class MainService {
-  private testMode = true;
+  private testMode = false;
   private url = "http://localhost:8089/";
   public recommendMode = "0";
   constructor(private http: HttpClient) { }
