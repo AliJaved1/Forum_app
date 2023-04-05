@@ -1,0 +1,25 @@
+<main>
+  <mat-card-header>
+    <mat-card-title>{{user.experience}} XP</mat-card-title>
+    <mat-card-subtitle>Posts:</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content id="posts">
+
+      <div *ngFor="let postCid of postCids">
+        <app-post-view [postID]="postCid"></app-post-view>
+      </div>
+
+  </mat-card-content>
+  <mat-divider></mat-divider>
+  <mat-card-actions *ngIf="user.vid == authService.selfVid" style="justify-content: center">
+    <div *ngIf="user.isMember">
+      <button mat-button>Change Name</button>
+      <button mat-button>Edit Logo</button>
+    </div>
+
+    <div *ngIf="!user.isMember">
+      <button mat-button>Signup</button>
+    </div>
+  </mat-card-actions>
+</main>
+

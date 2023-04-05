@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {dummyCustomFigure, to2Dfigure} from "../../data/models/CustomFigure";
+import {dummyCustomFigure, to2dFigure} from "../../data/models/CustomFigure";
 import {MainService} from "../../data/main.service";
 
 @Component({
@@ -13,7 +13,7 @@ export class FigureViewComponent {
 
   constructor(private mainService: MainService) {
     mainService.getCustomFigure(this.fid).subscribe(figure => {
-      let fig2D = to2Dfigure(figure);
+      let fig2D = to2dFigure(figure);
       this.data = fig2D.data;
     });
   }
