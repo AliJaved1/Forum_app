@@ -46,6 +46,7 @@ router.use(function (request, response, next) {
 /* POSTS ENDPOINTS*/
 
 // Create a new Member (INSERT). DONE
+router.route('/user').post(function (request, response) {
     console.log("CREATE MEMBER");
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
