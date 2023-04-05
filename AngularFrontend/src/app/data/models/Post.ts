@@ -20,11 +20,13 @@ export function dummyPost(): Post {
     attachments.push(dummyAttachment());
   }
 
+  let dummyAuthor = dummyUser();
+
   return {
     cid: "123",
     title: randomWord() + " " + randomWord() + " " + randomWord(),
-    authorVid: Math.round(Math.random() * 100) + "",
-    authorName: dummyUser().name,
+    authorVid: dummyAuthor.vid,
+    authorName: dummyAuthor.name,
     engagement: Math.random(),
     perception: Math.random(),
     attachments: attachments

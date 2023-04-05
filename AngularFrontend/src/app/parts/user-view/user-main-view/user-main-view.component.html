@@ -11,15 +11,20 @@
 
   </mat-card-content>
   <mat-divider></mat-divider>
+  <div style="height: 10px"></div>
   <mat-card-actions *ngIf="user.vid == authService.selfVid" style="justify-content: center">
-    <div *ngIf="user.isMember">
-      <button mat-button>Change Name</button>
-      <button mat-button>Edit Logo</button>
+    <div *ngIf="user.isMember" style="margin-top: 9px">
+      <button mat-button (click)="modProfile()">Modify profile</button>
+      <button mat-button (click)="showFigEditView()">Edit Logo</button>
     </div>
 
     <div *ngIf="!user.isMember">
-      <button mat-button>Signup</button>
+      <button mat-stroked-button (click)="showSignUpView()">Signup</button>
     </div>
   </mat-card-actions>
+  <mat-card-actions style="width:100%;display: flex;align-items: center">
+    <div style="flex: 1"></div>
+    <button mat-flat-button color="primary" (click)="showAuthView()">Switch Account</button>
+    <div style="flex: 1"></div>
+  </mat-card-actions>
 </main>
-

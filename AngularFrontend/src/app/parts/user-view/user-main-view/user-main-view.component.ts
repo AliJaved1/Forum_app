@@ -1,8 +1,12 @@
 import {Component, Input} from '@angular/core';
 import {dummyUser, User} from "../../../data/models/User";
 import {MainService} from "../../../data/main.service";
-import {Post} from "../../../data/models/Post";
 import {AuthService} from "../../../data/auth.service";
+import {AuthViewComponent} from "../../auth-view/auth-view.component";
+import {MatDialog} from "@angular/material/dialog";
+import {FigEditViewComponent} from "../../figure-view/fig-edit-view/fig-edit-view.component";
+import {SignupViewComponent} from "../../signup-view/signup-view.component";
+import {ModProfileViewComponent} from "../mod-profile-view/mod-profile-view.component";
 
 @Component({
   selector: 'app-user-main-view',
@@ -10,11 +14,28 @@ import {AuthService} from "../../../data/auth.service";
   styleUrls: ['./user-main-view.component.css']
 })
 export class UserMainViewComponent {
- @Input() user: User = dummyUser();
- postCids: string[] = [];
- constructor(public mainService: MainService, public authService: AuthService) {
-   mainService.getUserPostsCids(this.user.vid).subscribe(posts => {
+  @Input() user: User = dummyUser();
+  postCids: string[] = [];
+
+  constructor(public mainService: MainService, public authService: AuthService, private dialog: MatDialog) {
+    mainService.getUserPostsCids(this.user.vid).subscribe(posts => {
       this.postCids = posts;
-   })
- }
+    })
+  }
+
+  showAuthView() {
+    this.dialog.open(AuthViewComponent, {});
+  }
+
+  showFigEditView() {
+    this.dialog.open(FigEditViewComponent, {});
+  }
+
+  showSignUpView() {
+    this.dialog.open(SignupViewComponent, {});
+  }
+
+  modProfile() {
+    this.dialog.open(ModProfileViewComponent, {data: this.user});
+  }
 }

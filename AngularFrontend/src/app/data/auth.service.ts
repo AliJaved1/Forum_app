@@ -18,20 +18,22 @@ export class AuthService {
           this.selfVid = vID;
         },
         (error) => {
-          // alert("login failed: " + error);
-          this.mainService.signup().subscribe(
+          alert("login failed: " + error);
+          this.mainService.makeGuest().subscribe(
             (vID) => {
               this.selfVid = vID;
-            }
+            },
+            (error) => alert("login as guest also failed: " + error)
           );
         }
       );
-    }else{
+    } else {
       // signup
-      this.mainService.signup().subscribe(
+      this.mainService.makeGuest().subscribe(
         (vID) => {
           this.selfVid = vID;
-        }
+        },
+        (error) => alert("login as guest failed: " + error)
       );
     }
   }
@@ -43,6 +45,9 @@ export class AuthService {
         this.selfVid = vID;
         this.cookieService.set("vID", this.selfVid);
         this.cookieService.set("password", password);
+      },
+      (error) => {
+        alert("login failed: " + error);
       }
     );
   }

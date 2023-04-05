@@ -1,0 +1,12 @@
+<main>
+  <mat-card-title style="margin-bottom: 5px">Modify Profile</mat-card-title>
+  <mat-card-subtitle>Enter your new name</mat-card-subtitle>
+
+  <mat-form-field style="margin-top: 10px">
+    <mat-label>User Name</mat-label>
+    <input matInput [(ngModel)]="newName" placeholder="Enter your User Name">
+  </mat-form-field>
+
+
+  <button mat-raised-button color="primary" (click)="submit()" mat-dialog-close="">Submit</button>
+</main>

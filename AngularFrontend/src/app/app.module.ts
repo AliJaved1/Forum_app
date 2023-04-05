@@ -42,6 +42,10 @@ import {
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { AuthViewComponent } from './parts/auth-view/auth-view.component';
 import { UserMainViewComponent } from './parts/user-view/user-main-view/user-main-view.component';
+import { FigEditViewComponent } from './parts/figure-view/fig-edit-view/fig-edit-view.component';
+import { PostEditViewComponent } from './parts/post-view/post-edit-view/post-edit-view.component';
+import { SignupViewComponent } from './parts/signup-view/signup-view.component';
+import { ModProfileViewComponent } from './parts/user-view/mod-profile-view/mod-profile-view.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +69,10 @@ import { UserMainViewComponent } from './parts/user-view/user-main-view/user-mai
     SingleCommentViewComponent,
     AuthViewComponent,
     UserMainViewComponent,
+    FigEditViewComponent,
+    PostEditViewComponent,
+    SignupViewComponent,
+    ModProfileViewComponent,
   ],
     imports: [
         BrowserModule,
@@ -90,7 +98,7 @@ import { UserMainViewComponent } from './parts/user-view/user-main-view/user-mai
         FormsModule,
         CdkDragHandle,
         HttpClientModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
     ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,31 +1,20 @@
-import {Component} from '@angular/core';
-import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
-import {FormControl, FormGroupDirective, NgForm, Validators} from "@angular/forms";
-import {ErrorStateMatcher} from "@angular/material/core";
-import {Attachment, dummyAttachment, dummyAttachments} from "../../../data/models/Attachment";
-import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
-import {MainService} from "../../../data/main.service";
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 import {Post} from "../../../data/models/Post";
+import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
+import {MainService} from "../../../data/main.service";
 import {AuthService} from "../../../data/auth.service";
-
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-  }
-}
+import {FormControl, Validators} from "@angular/forms";
+import {Attachment} from "../../../data/models/Attachment";
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
+import {MyErrorStateMatcher} from "../new-post-view/new-post-view.component";
 
 @Component({
-  selector: 'app-new-post-view',
-  templateUrl: './new-post-view.component.html',
-  styleUrls: ['./new-post-view.component.css']
+  selector: 'app-post-edit-view',
+  templateUrl: './post-edit-view.component.html',
+  styleUrls: ['./post-edit-view.component.css']
 })
-
-export class NewPostViewComponent {
-  constructor(private _bottomSheetRef: MatBottomSheetRef<NewPostViewComponent>, private mainService: MainService, private auth: AuthService) {
-  }
-
-
+export class PostEditViewComponent {
   matcher = new MyErrorStateMatcher();
   titleFormControl = new FormControl('', [Validators.required, Validators.maxLength(30)]);
 
@@ -33,6 +22,10 @@ export class NewPostViewComponent {
   attachments: Attachment[] = [];
   newAttachmentType: string = 'text'
   newAttachmentContent: string = '';
+  constructor(@Inject(MAT_DIALOG_DATA) public post: Post, private mainService: MainService, private auth: AuthService) {
+    this.title = post.title;
+    this.attachments = post.attachments;
+  }
 
   addAttachment() {
     let newAttachment: Attachment = {
@@ -63,8 +56,8 @@ export class NewPostViewComponent {
         title: this.title,
         attachments: this.attachments
       }
-      this.mainService.postPost(newPost)
-      this._bottomSheetRef.dismiss();
+      this.mainService.updatePost(newPost)
+      // this._bottomSheetRef.dismiss();
     });
   }
 }

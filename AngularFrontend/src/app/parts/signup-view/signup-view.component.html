@@ -1,0 +1,27 @@
+<main>
+  <form style="display: flex; flex-direction: column; margin: 20px">
+    <mat-card-title>
+      Guest Signup
+    </mat-card-title>
+
+    <mat-card-subtitle>
+      Please enter your email address and password
+    </mat-card-subtitle>
+
+    <mat-form-field style="margin-top: 10px">
+      <mat-label>User name</mat-label>
+      <input matInput placeholder="Enter new username" [(ngModel)]="name">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput placeholder="Enter your email" [(ngModel)]="email">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>New Password</mat-label>
+      <input matInput placeholder="Enter your password" [(ngModel)]="password">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="signup()" mat-dialog-close="">Submit</button>
+  </form>
+</main>

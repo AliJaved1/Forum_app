@@ -24,7 +24,7 @@ export class PostViewComponent {
       });
   }
 
-  showMessageView() {
+  showPopupView() {
     this.dialog.open(PostPopUpViewComponent, {
       data: this.post
     });
