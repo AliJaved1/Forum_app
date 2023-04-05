@@ -1,51 +1,39 @@
 CREATE TABLE Visitor 
 	(ip varchar(39),
 	experience int NOT NULL,
-	vid int PRIMARY KEY,
+	vid varchar(36) PRIMARY KEY,
 	datecreated date);
 
 CREATE TABLE Guest 
-	(gid int PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE);
+	(gid varchar(36) PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE);
 
 CREATE TABLE Member 
-	(mid int PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE,
+	(mid varchar(36) PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE,
 	email varchar(254) NOT NULL,
 	password varchar(254) NOT NULL);
 
 CREATE TABLE UserContent 
-	(cid int PRIMARY KEY,
-	mid int,
+	(cid varchar(36) PRIMARY KEY,
+	mid varchar(36),
 	datecreated date,
 	FOREIGN KEY (mid) REFERENCES Member(mid) ON DELETE CASCADE);
 
 CREATE TABLE UserComment
-	(coid int PRIMARY KEY REFERENCES UserContent(cid) ON DELETE CASCADE,
-	votes int NOT NULL,
+	(coid varchar(36) PRIMARY KEY REFERENCES UserContent(cid) ON DELETE CASCADE,
+	upvotes int NOT NULL,
+	downvotes int NOT NULL, 
 	content varchar(200) NOT NULL);
 
 CREATE TABLE Post 
-	(pid int PRIMARY KEY REFERENCES UserContent(cid) ON DELETE CASCADE,
-	votes int NOT NULL,
+	(pid varchar(36) PRIMARY KEY REFERENCES UserContent(cid) ON DELETE CASCADE,
+	upvotes int NOT NULL,
+	downvotes int NOT NULL,
 	title varchar(200) NOT NULL); 
 
 CREATE TABLE Attachment 
-	(attid int PRIMARY KEY,
-	pid int,
+	(attid varchar(36) PRIMARY KEY,
+	pid varchar(36),
+	type varchar(10),
+	content varchar(1000),
 	FOREIGN KEY (pid) REFERENCES Post(pid)
 	ON DELETE CASCADE);
-
-CREATE TABLE Image 
-	(iid int PRIMARY KEY REFERENCES Attachment(attid) ON DELETE CASCADE,
-	link varchar(100) NOT NULL);
-
-CREATE TABLE Link 
-	(lid int PRIMARY KEY REFERENCES Attachment(attid) ON DELETE CASCADE,
-	link varchar(100) NOT NULL);
-
-CREATE TABLE Video 
-	(viid int PRIMARY KEY REFERENCES Attachment(attid) ON DELETE CASCADE,
-	link varchar(100) NOT NULL);
-
-CREATE TABLE Text
-	(tid int PRIMARY KEY REFERENCES Attachment(attid) ON DELETE CASCADE,
-	text varchar(1000) NOT NULL);
