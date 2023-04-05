@@ -1,10 +1,13 @@
 import {Injectable} from '@angular/core';
 import {dummyUser, User} from "./models/User";
 import {HttpClient} from "@angular/common/http";
-import {delay, Observable, of} from "rxjs";
+import {delay, map, Observable, of} from "rxjs";
 import {dummyPost, Post} from "./models/Post";
 import {Attachment, dummyAttachment} from "./models/Attachment";
 import {AuthService} from "./auth.service";
+import {CustomFigure, dummyCustomFigure, to1dFigure, to2dFigure} from "./models/CustomFigure";
+import {CustomFigure1D, dummyCustomFigure1D} from "./models/CustomFigure1D";
+import {dummyComment} from "./models/Comment";
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +69,20 @@ export class MainService {
     this.http.post<Post>(this.url + "post", post);
   }
 
+  deletePost(cid:string) {
+    if (this.testMode) {
+      return;
+    }
+    this.http.delete(this.url + "post/" + cid);
+  }
+
+  updatePost(post:Post) {
+    if (this.testMode) {
+      return;
+    }
+    this.http.put<Post>(this.url + "post", post);
+  }
+
   viewPost(cid:string,vid:string) {
     if (this.testMode) {
       return;
@@ -93,4 +110,40 @@ export class MainService {
     }
     return this.http.get<Attachment>(this.url + "attachment/" + attid);
   }
+
+  getCustomFigure(fid:string): Observable<CustomFigure1D> {
+    if (this.testMode) {
+      return of(dummyCustomFigure1D()).pipe(delay(600));
+    }
+    return this.http.get<CustomFigure1D>(this.url + "cf/" + fid)
+  }
+
+  postCustomFigure(figure2d:CustomFigure) {
+    if (this.testMode) {
+      return;
+    }
+    let figure1d = to1dFigure(figure2d);
+    this.http.post<CustomFigure>(this.url + "cf", figure1d);
+  }
+
+  updateCustomFigure(figure2d:CustomFigure) {
+    if (this.testMode) {
+      return;
+    }
+    let figure1d = to1dFigure(figure2d);
+    this.http.put<CustomFigure>(this.url + "cf", figure1d);
+  }
+
+  // postComment(comment: Comment){
+  //   if (this.testMode) {
+  //     return;
+  //   }
+  //   this.http.post(this.url + "comment", comment);
+  // }
+
+  // getComments(cid: string): Observable<Comment[]>{
+  //     if (this.testMode) {
+  //       return of([dummyComment()
+  //     }
+  // }
 }

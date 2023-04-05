@@ -41,6 +41,7 @@ import {
 } from './parts/post-view/comments-view/single-comment-view/single-comment-view.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { AuthViewComponent } from './parts/auth-view/auth-view.component';
+import { UserMainViewComponent } from './parts/user-view/user-main-view/user-main-view.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { AuthViewComponent } from './parts/auth-view/auth-view.component';
     CommentsViewComponent,
     SingleCommentViewComponent,
     AuthViewComponent,
+    UserMainViewComponent,
   ],
     imports: [
         BrowserModule,

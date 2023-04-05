@@ -53,7 +53,7 @@ export class NewPostViewComponent {
 
   submitPost(){
     let newPost: Post = {
-      authorName: "", authorVid: this.auth.selfVid, cid: "", engagement: 0, perception: 0, postTime: "",
+      authorName: "", authorVid: this.auth.selfVid, cid: "", engagement: 0, perception: 0,
       title: this.title,
       attachments: this.attachments
     }

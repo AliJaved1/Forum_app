@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {dummyCustomFigure} from "../../data/models/CustomFigure";
+import {dummyCustomFigure, to2dFigure} from "../../data/models/CustomFigure";
+import {MainService} from "../../data/main.service";
 
 @Component({
   selector: 'app-figure-view',
@@ -8,19 +9,16 @@ import {dummyCustomFigure} from "../../data/models/CustomFigure";
 })
 export class FigureViewComponent {
   @Input() fid: string = "fid";
-  @Input() width: number = 100;
-  @Input() height: number = 100;
-  data: number[][] = dummyCustomFigure(this.width, this.height).data;
+  data: number[][] = dummyCustomFigure().data;
+
+  constructor(private mainService: MainService) {
+    mainService.getCustomFigure(this.fid).subscribe(figure => {
+      let fig2D = to2dFigure(figure);
+      this.data = fig2D.data;
+    });
+  }
 
   color_map = ["red","blue","grey","yellow","white","black","pink","orange", "lime", "green"]
-
-  widthInPixels(): string {
-    return this.width + "px";
-  }
-
-  heightInPixels(): string {
-    return this.height + "px";
-  }
 
   colorForCell(colorCode: number): string {
     return this.color_map[colorCode];

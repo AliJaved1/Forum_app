@@ -7,7 +7,6 @@ export interface Post {
   title: string;
   authorVid: string;
   authorName: string;
-  postTime: string;
   engagement: number; // 0-1 floating point (for now)
   perception: number; // 0-1 floating point, basically like/(like+dislike)
   attachments: Attachment[];
@@ -26,7 +25,6 @@ export function dummyPost(): Post {
     title: randomWord() + " " + randomWord() + " " + randomWord(),
     authorVid: Math.round(Math.random() * 100) + "",
     authorName: dummyUser().name,
-    postTime: "2019-01-01T00:00:00.000Z",
     engagement: Math.random(),
     perception: Math.random(),
     attachments: attachments
