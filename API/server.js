@@ -24,6 +24,8 @@ function doRelease(connection) {
     });
 }
 
+totalVotes = 0;
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,8 +45,7 @@ router.use(function (request, response, next) {
 
 /* POSTS ENDPOINTS*/
 
-// Create a new Member (INSERT). Gives me a User object, and then I fill out the database tables with the info
-router.route('/user').post(function (request, response) {
+// Create a new Member (INSERT). DONE
     console.log("CREATE MEMBER");
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -67,8 +68,6 @@ router.route('/user').post(function (request, response) {
                     doRelease(connection);
                     return;
                 }
-                response.end();
-                doRelease(connection);
             });
         
         if (visitor.isMember) {
@@ -82,15 +81,16 @@ router.route('/user').post(function (request, response) {
                         doRelease(connection);
                         return;
                     }
-                    response.end();
-                    doRelease(connection);
                 });
         }
+
+        response.json(vid);
+        doRelease(connection);
     });
 });
 
-// Delete a visitor account (DELETE)
-router.route('/user/:vid').delete(function (request, response) {
+// Delete a visitor account (DELETE) DONE
+router.route('/user/:id').delete(function (request, response) {
     console.log("DELETE VISITOR ID:" + request.params.id);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -117,9 +117,9 @@ router.route('/user/:vid').delete(function (request, response) {
     });
 });
 
-// Edit a visitor's info. Will just change stuff in database
+// Edit a visitor's info. DONE
 router.route('/user/:id').put(function (request, response) {
-  console.log("EDIT VISITOR:");
+    console.log("EDIT VISITOR:" + request.params.id);
   oracledb.getConnection(connectionProperties, function (err, connection) {
     if (err) {
       console.error(err.message);
@@ -135,7 +135,7 @@ router.route('/user/:id').put(function (request, response) {
       function (err, result) {
         if (err) {
           console.error(err.message);
-          response.status(500).send("Error updating employee to DB");
+          response.status(500).send("Error updating visitor to DB");
           doRelease(connection);
           return;
         }
@@ -145,7 +145,7 @@ router.route('/user/:id').put(function (request, response) {
   });
 });
 
-// Show only visitors with an experience threshold (Selection)
+// Show only visitors with an experience threshold (Selection) DONE
 router.route('/user').get(function (request, response) {
     console.log("GET VISITORS WITH EXPERIENCE");
     oracledb.getConnection(connectionProperties, function (err, connection) {
@@ -177,8 +177,7 @@ router.route('/user').get(function (request, response) {
     });
 });
 
-// Create a post
-// Affected tables: UserContent, Post, Engagement, Engage 
+// Create a post DONE except attid generation
 router.route('/post').post(function (request, response) {
     console.log("CREATE POST");
     oracledb.getConnection(connectionProperties, function (err, connection) {
@@ -189,12 +188,11 @@ router.route('/post').post(function (request, response) {
         }
         console.log("After connection");
 
-        // TODO: make sure this reflects actual stuff from frontend
         post = request.body;
         cid = uuidv4();
 
-        connection.execute("INSERT INTO UserContent (cid, mid)" +
-            "VALUES(:cid, :mid)", [cid, post.authorVid],
+        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
+            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, Date.now()],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -211,7 +209,7 @@ router.route('/post').post(function (request, response) {
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error creating userContent");
+                    response.status(500).send("Error creating Post");
                     doRelease(connection);
                     return;
                 }
@@ -224,15 +222,15 @@ router.route('/post').post(function (request, response) {
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error creating userContent");
+                    response.status(500).send("Error creating Engagement");
                     doRelease(connection);
                     return;
                 }
             });
 
         for (attachment in post.attachments) {
-            connection.execute("INSERT INTO Attachment (attid)" +
-            "VALUES(:attid)", [attachment.attid],
+            connection.execute("INSERT INTO Attachment (attid, pid)" +
+            "VALUES(:attid, :pid)", [attachment.attid, cid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -296,11 +294,14 @@ router.route('/post').post(function (request, response) {
                     });
             }
         }
+
+        response.json(cid); // TODO: add attids to this response
+        doRelease(connection);
     });
 });
 
-// Delete post
-router.route('/post/:cid').delete(function (request, response) {
+// Delete post DONE
+router.route('/post/:id').delete(function (request, response) {
     console.log("DELETE POST CID:" + request.params.id);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -312,22 +313,7 @@ router.route('/post/:cid').delete(function (request, response) {
         var post = request.body;
         var cid = request.params.id;
 
-        // delete attachments first
-        for (attachment in post.attachments) {
-            connection.execute("DELETE FROM Attachment WHERE attid = :vid",
-                [attachment.attid],
-                function (err, result) {
-                    if (err) {
-                        console.error(err.message);
-                        response.status(500).send("Error deleting attachment from DB");
-                        doRelease(connection);
-                        return;
-                    }
-                    response.end();
-                    doRelease(connection);
-            });
-        }
-
+        // will delete cids, which cascades with pid, which cascades with attid
         connection.execute("DELETE FROM UserContent WHERE cid = :cid",
             [cid],
             function (err, result) {
@@ -343,7 +329,35 @@ router.route('/post/:cid').delete(function (request, response) {
     });
 });
 
-// Create comment
+// Upvote a post. TODO
+router.route('/user/:id').put(function (request, response) {
+    console.log("EDIT POST:" + request.params.id);
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+
+        var body = request.body;
+        var id = request.params.id;
+
+        connection.execute("UPDATE Post SET EMAIL=:email, ABOUT=:about WHERE mid=:id",
+            [body.name, body.about, id],
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error updating employee to DB");
+                    doRelease(connection);
+                    return;
+                }
+                response.end();
+                doRelease(connection);
+            });
+    });
+});
+
+// Create comment. DONE
 router.route('/comment').post(function (request, response) {
     console.log("CREATE COMMENT");
     oracledb.getConnection(connectionProperties, function (err, connection) {
@@ -356,9 +370,10 @@ router.route('/comment').post(function (request, response) {
 
         // TODO: make sure this reflects actual stuff from frontend
         comment = request.body;
+        cid = uuidv4();
 
-        connection.execute("INSERT INTO UserComment (coid, content)" +
-            "VALUES(:coid, :content", [comment.cid, comment.content],
+        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
+            "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, Date.now()],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -367,15 +382,10 @@ router.route('/comment').post(function (request, response) {
                     doRelease(connection);
                     return;
                 }
-                response.end();
-                doRelease(connection);
             });
 
-
-        // aid = generated
-
-        connection.execute("INSERT INTO Action1 (aid, time)" +
-            "VALUES(:coid, :content", [comment.cid, Date.now().toString()],
+        connection.execute("INSERT INTO UserComment (coid, votes, content)" +
+            "VALUES(:coid, :votes, :content)", [cid, 0, comment.content],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -384,17 +394,32 @@ router.route('/comment').post(function (request, response) {
                     doRelease(connection);
                     return;
                 }
-                response.end();
-                doRelease(connection);
             });
 
-        connection.execute("INSERT INTO Action2 (aid, time)" +
-            "VALUES(:coid, :content", [comment.cid, Date.now().toString()],
-            { outFormat: oracledb.OBJECT },
+        response.json(cid);
+        doRelease(connection);
+    });
+});
+
+// Edit a comment DONE
+router.route('/user/:id').put(function (request, response) {
+    console.log("EDIT COMMENT:" + request.params.id);
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+
+        var comment = request.body;
+        var id = request.params.id;
+
+        connection.execute("UPDATE UserComment SET CONTENT=:content WHERE coid=:id",
+            [comment.content, id],
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error creating comment");
+                    response.status(500).send("Error updating comment to DB");
                     doRelease(connection);
                     return;
                 }
@@ -404,9 +429,7 @@ router.route('/comment').post(function (request, response) {
     });
 });
 
-// Get a comment
-
-// Delete comment
+// Delete comment DONE
 router.route('/comment/:cid').delete(function (request, response) {
     console.log("DELETE COMMENT ID:" + request.params.id);
     oracledb.getConnection(connectionProperties, function (err, connection) {
@@ -417,7 +440,7 @@ router.route('/comment/:cid').delete(function (request, response) {
         }
 
         var coid = request.params.id;
-        connection.execute("DELETE FROM UserComment WHERE coid = :coid",
+        connection.execute("DELETE FROM UserContent WHERE cid = :coid",
             [coid],
             function (err, result) {
                 if (err) {
@@ -432,7 +455,7 @@ router.route('/comment/:cid').delete(function (request, response) {
     });
 });
 
-// Aggregation with Having: Select the MAX upvoted post
+// Aggregation with Having: Select the MAX upvoted post TODO
 router.route('/postupvote/').post(function (request, response) {
     console.log("RETURN MOST UPVOTED POST:");
     oracledb.getConnection(connectionProperties, function (err, connection) {
