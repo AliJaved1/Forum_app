@@ -111,24 +111,11 @@ export class MainService {
       return of();
     }));
   }
-
-  updatePost(post:Post) {
+  likeContent(cid:string) {
     if (this.testMode) {
       return;
     }
-    this.http.put<Post>(this.url + "post", post).pipe(catchError (err => {
-      alert("failed to update post");
-      return of();
-    }));
-  }
-
-
-
-  likeContent(cid:string, vid:string) {
-    if (this.testMode) {
-      return;
-    }
-    this.http.get(this.url + "perception/like/" + cid + "/" + vid).pipe(catchError (err => {
+    this.http.get(this.url + "perception/like/" + cid).pipe(catchError (err => {
       alert("failed to like content");
       return of();
     }));
@@ -207,4 +194,19 @@ export class MainService {
   //       return of([dummyComment()
   //     }
   // }
+  // updatePost(post:Post) {
+  //   if (this.testMode) {
+  //     return;
+  //   }
+  // }
+  // likeContent(cid:string, vid:string) {
+  //   if (this.testMode) {
+  //     return;
+  //   }
+  //   this.http.get(this.url + "perception/like/" + cid + "/" + vid).pipe(catchError (err => {
+  //     alert("failed to like content");
+  //     return of();
+  //   }));
+  // }
+
 }
