@@ -40,6 +40,6 @@ CREATE TABLE Attachment
 	ON DELETE CASCADE);
 
 CREATE TABLE Views
-	(vid varchar(36),
-	 pid varchar(36),
+	(vid varchar(36) NOT NULL,
+	 pid varchar(36) NOT NULL,
 	 PRIMARY KEY (vid, pid));
