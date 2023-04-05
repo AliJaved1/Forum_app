@@ -48,90 +48,93 @@ router.use(function (request, response, next) {
 // Create a new Guest (INSERT). DONE
 router.route('/auth/new').get(function (request, response) {
     console.log("CREATE GUEST");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
-
-        vid = uuidv4();
-
-        var date;
-        date = new Date();
-        date = date.getUTCFullYear() + '-' +
-            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2)
-
-        connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" + 
-        "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
-            { outFormat: oracledb.OBJECT }, 
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating visitor");
-                    doRelease(connection);
-                    return;
-                }
-            });
-        
-        connection.execute("INSERT INTO Guest (gid)" +
-            "VALUES(:vid)", [vid],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating member");
-                    doRelease(connection);
-                    return;
-                }
-            });
-
-        response.json(vid);
-        doRelease(connection);
-    });
+    // oracledb.getConnection(connectionProperties, function (err, connection) {
+    //     if (err) {
+    //         console.error(err.message);
+    //         response.status(500).send("Error connecting to DB");
+    //         return;
+    //     }
+    //     console.log("After connection");
+    //
+    //     vid = uuidv4();
+    //
+    //     var date;
+    //     date = new Date();
+    //     date = date.getUTCFullYear() + '-' +
+    //         ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+    //         ('00' + date.getUTCDate()).slice(-2)
+    //
+    //     connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" +
+    //     "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error creating visitor");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //         });
+    //
+    //     connection.execute("INSERT INTO Guest (gid)" +
+    //         "VALUES(:vid)", [vid],
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error creating member");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //         });
+    //
+    //     response.json(vid);
+    //     doRelease(connection);
+    // });
+    console.log("new guest")
+    response.json("new guest");
 });
 
 // Create a new Member (INSERT). DONE
 router.route('/auth/signup/:password').post(function (request, response) {
-    console.log("CREATE MEMBER");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
-
-        user = request.body;
-        
-        connection.execute("INSERT INTO Member (mid, email, password)" +
-            "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating member");
-                    doRelease(connection);
-                    return;
-                }
-            });
-
-        connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error deleting guest when making member");
-                    doRelease(connection);
-                    return;
-                }
-            });
-
-        response.json(user.vid);
-        doRelease(connection);
-    });
+    // console.log("CREATE MEMBER");
+    // oracledb.getConnection(connectionProperties, function (err, connection) {
+    //     if (err) {
+    //         console.error(err.message);
+    //         response.status(500).send("Error connecting to DB");
+    //         return;
+    //     }
+    //     console.log("After connection");
+    //
+    //     user = request.body;
+    //
+    //     connection.execute("INSERT INTO Member (mid, email, password)" +
+    //         "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error creating member");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //         });
+    //
+    //     connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error deleting guest when making member");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //         });
+    //
+    //     response.json(user.vid);
+    //     doRelease(connection);
+    // });
+         response.json("asdfafd");
 });
 
 // logging in
@@ -166,37 +169,43 @@ router.route('/auth/:vid/:password').get(function (request, response) {
 });
 
 // Get a visitor's info (Join)
-router.route('user/:vid').get(function (request, response) {
+router.route('/user/:vid').get(function (request, response) {
     console.log("GET VISITOR INFO");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
+    // oracledb.getConnection(connectionProperties, function (err, connection) {
+    //     if (err) {
+    //         console.error(err.message);
+    //         response.status(500).send("Error connecting to DB");
+    //         return;
+    //     }
+    //     console.log("After connection");
+    //
+    //     vid = request.params.vid;
+    //
+    //     connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = :vid", [vid], // TODO: Change this query to only return needed things
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error getting data from DB");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //             console.log("RESULTSET:" + JSON.stringify(result));
+    //             User = {
+    //                 vid: result.vid, isMember: true, name: result.name, experience: result.experience,
+    //                 thumbnailID: "", email: result.email, about: result.about
+    //             }
+    //
+    //             response.json(User);
+    //             doRelease(connection);
+    //     });
+    // });
 
-        vid = request.params.vid;
-
-        connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = :vid", [vid], // TODO: Change this query to only return needed things
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                User = {
-                    vid: result.vid, isMember: true, name: result.name, experience: result.experience, 
-                    thumbnailID: "", email: result.email, about: result.about
-                }
-                
-                response.json(User);
-                doRelease(connection);
-        });
-    });
+    let User = {
+        vid: request.params.vid, isMember: true, name: "aaa", experience: 0.5,
+        thumbnailID: "", email: "1", about: "1"
+    }
+    response.json(User);
 });
 
 // Delete a visitor account (DELETE) DONE
@@ -309,14 +318,14 @@ router.route('/post').post(function (request, response) {
             cid = post.cid;
         }
 
-        var date;
-        date = new Date();
-        date = date.getUTCFullYear() + '-' +
-            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2)
+        var date = '22-APR-22';
+        // date = new Date();
+        // date = date.getUTCFullYear() + '-' +
+        //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+        //     ('00' + date.getUTCDate()).slice(-2)
 
-        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
+            connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
+                "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -392,32 +401,33 @@ router.route('/post/:cid').delete(function (request, response) {
 // Get recommended posts
 router.route('/posts/recom/:mode').get(function (request, response) {
     console.log("GET RECOMMENDED POSTS");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
-
-        connection.execute("SELECT cid FROM UserContent ORDER BY upvotes", {},
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                var posts = [];
-                result.rows.forEach(function (element) {
-                    posts.push(element.vid);
-                }, this);
-                response.json(posts);
-                doRelease(connection);
-            });
-    });
+    // oracledb.getConnection(connectionProperties, function (err, connection) {
+    //     if (err) {
+    //         console.error(err.message);
+    //         response.status(500).send("Error connecting to DB");
+    //         return;
+    //     }
+    //     console.log("After connection");
+    //
+    //     connection.execute("SELECT cid FROM UserContent ORDER BY upvotes", {},
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error getting data from DB");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //             console.log("RESULTSET:" + JSON.stringify(result));
+    //             var posts = [];
+    //             result.rows.forEach(function (element) {
+    //                 posts.push(element.vid);
+    //             }, this);
+    //             response.json(posts);
+    //             doRelease(connection);
+    //         });
+    // });
+    response.json(["12"]);
 });
 
 // get all posts made by a user (Join)
@@ -454,37 +464,43 @@ router.route('/posts/user/:vid').get(function (request, response) {
 });
 
 // Get a post's information TODO
-router.route('post/:cid').get(function (request, response) {
+router.route('/post/:cid').get(function (request, response) {
     console.log("GET POST INFO");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
+    // oracledb.getConnection(connectionProperties, function (err, connection) {
+    //     if (err) {
+    //         console.error(err.message);
+    //         response.status(500).send("Error connecting to DB");
+    //         return;
+    //     }
+    //     console.log("After connection");
+    //
+    //     cid = request.params.cid;
+    //
+    //     connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor, UserContent, Post, Attachment WHERE cid = :cid", [cid],
+    //         { outFormat: oracledb.OBJECT },
+    //         function (err, result) {
+    //             if (err) {
+    //                 console.error(err.message);
+    //                 response.status(500).send("Error getting data from DB");
+    //                 doRelease(connection);
+    //                 return;
+    //             }
+    //             console.log("RESULTSET:" + JSON.stringify(result));
+    //             Post = {
+    //                 cid: result.vid, title: result.title, authorVid: result.vid, authorName: result.name,
+    //                 engagement: 0.5, perception: 0.5, attachments: []
+    //             }
+    //
+    //             response.json(Post);
+    //             doRelease(connection);
+    //     });
+    // });
+    let Post = {
+        cid: 'aaa', title: "ss", authorVid: 'aa', authorName: 'aa',
+        engagement: 0.5, perception: 0.5, attachments: []
+    }
 
-        cid = request.params.cid;
-
-        connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor, UserContent, Post, Attachment WHERE cid = :cid", [cid],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                Post = {
-                    cid: result.vid, title: result.title, authorVid: result.vid, authorName: result.name, 
-                    engagement: 0.5, perception: 0.5, attachments: []
-                }
-                
-                response.json(Post);
-                doRelease(connection);
-        });
-    });
+    response.json(Post);
 });
 
 
@@ -564,12 +580,12 @@ router.route('/comment').post(function (request, response) {
         comment = request.body;
         cid = uuidv4();
 
-        var date;
-        date = new Date();
-        date = date.getUTCFullYear() + '-' +
-            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2)
-
+        // var date;
+        // date = new Date();
+        // date = date.getUTCFullYear() + '-' +
+        //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+        //     ('00' + date.getUTCDate()).slice(-2)
+        var date = '22-APR-22';
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
             "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, date],
             { outFormat: oracledb.OBJECT },
