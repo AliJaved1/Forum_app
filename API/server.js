@@ -46,8 +46,8 @@ router.use(function (request, response, next) {
 /* POSTS ENDPOINTS*/
 
 // Create a new Member (INSERT). DONE
-router.route('/user').post(function (request, response) {
-    console.log("CREATE MEMBER");
+router.route('/auth/new').get(function (request, response) {
+    console.log("CREATE VISITOR");
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
             console.error(err.message);
@@ -56,11 +56,10 @@ router.route('/user').post(function (request, response) {
         }
         console.log("After connection");
 
-        visitor = request.body;
         vid = uuidv4();
 
         connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" + 
-        "VALUES(:ip, :experience, :vid, :time)", [visitor.ip, 0, vid, Date.now()],
+        "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, Date.now()],
             { outFormat: oracledb.OBJECT }, 
             function (err, result) {
                 if (err) {
@@ -71,19 +70,17 @@ router.route('/user').post(function (request, response) {
                 }
             });
         
-        if (visitor.isMember) {
-            connection.execute("INSERT INTO Member (mid, email, about)" +
-            "VALUES(:mid, :email, :about)", [vid, visitor.name, visitor.about],
-                { outFormat: oracledb.OBJECT },
-                function (err, result) {
-                    if (err) {
-                        console.error(err.message);
-                        response.status(500).send("Error creating member");
-                        doRelease(connection);
-                        return;
-                    }
-                });
-        }
+        connection.execute("INSERT INTO Member (mid, email, password)" +
+            "VALUES(:mid, :email, :password)", [vid, "", ""],
+            { outFormat: oracledb.OBJECT },
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error creating member");
+                    doRelease(connection);
+                    return;
+                }
+            });
 
         response.json(vid);
         doRelease(connection);
@@ -483,6 +480,16 @@ router.route('/postupvote/').post(function (request, response) {
             });
     });
 });
+
+// Projection 
+
+// Join
+
+// Aggregation with GROUP BY
+
+// Nested Aggregation with GROUP BY
+
+// Division
 
 app.use(express.static('static'));
 app.use('/', router);
