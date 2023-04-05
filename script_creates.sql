@@ -2,7 +2,8 @@ CREATE TABLE Visitor
 	(ip varchar(39),
 	experience int NOT NULL,
 	vid varchar(36) PRIMARY KEY,
-	datecreated date);
+	datecreated date,
+	name varchar(20));
 
 CREATE TABLE Guest 
 	(gid varchar(36) PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE);
