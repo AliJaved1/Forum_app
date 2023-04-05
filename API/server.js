@@ -58,8 +58,14 @@ router.route('/auth/new').get(function (request, response) {
 
         vid = uuidv4();
 
+        var date;
+        date = new Date();
+        date = date.getUTCFullYear() + '-' +
+            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+            ('00' + date.getUTCDate()).slice(-2)
+
         connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" + 
-        "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, Date.now()],
+        "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
             { outFormat: oracledb.OBJECT }, 
             function (err, result) {
                 if (err) {
@@ -303,8 +309,14 @@ router.route('/post').post(function (request, response) {
             cid = post.cid;
         }
 
+        var date;
+        date = new Date();
+        date = date.getUTCFullYear() + '-' +
+            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+            ('00' + date.getUTCDate()).slice(-2)
+
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, Date.now()],
+            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -552,8 +564,14 @@ router.route('/comment').post(function (request, response) {
         comment = request.body;
         cid = uuidv4();
 
+        var date;
+        date = new Date();
+        date = date.getUTCFullYear() + '-' +
+            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+            ('00' + date.getUTCDate()).slice(-2)
+
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-            "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, Date.now()],
+            "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, date],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
