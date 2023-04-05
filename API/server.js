@@ -62,7 +62,7 @@ router.route('/auth/new').get(function (request, response) {
         date = new Date();
         date = date.getUTCFullYear() + '-' +
             ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2)
+            ('00' + date.getUTCDate()).slice(-2);
 
         connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" + 
         "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
@@ -166,7 +166,7 @@ router.route('/auth/:vid/:password').get(function (request, response) {
 });
 
 // Get a visitor's info (Join)
-router.route('user/:vid').get(function (request, response) {
+router.route('/user/:vid').get(function (request, response) {
     console.log("GET VISITOR INFO");
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -178,7 +178,9 @@ router.route('user/:vid').get(function (request, response) {
 
         vid = request.params.vid;
 
-        connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = :vid", [vid], // TODO: Change this query to only return needed things
+
+
+        connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -433,7 +435,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
 
         vid = request.params.vid;
 
-        connection.execute("SELECT cid FROM UserContent WHERE mid = :vid", [vid],
+        connection.execute("SELECT cid FROM UserContent WHERE mid = :cid", [vid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -454,7 +456,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
 });
 
 // Get a post's information TODO
-router.route('post/:cid').get(function (request, response) {
+router.route('/post/:cid').get(function (request, response) {
     console.log("GET POST INFO");
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -466,7 +468,7 @@ router.route('post/:cid').get(function (request, response) {
 
         cid = request.params.cid;
 
-        connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor, UserContent, Post, Attachment WHERE cid = :cid", [cid],
+        connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
