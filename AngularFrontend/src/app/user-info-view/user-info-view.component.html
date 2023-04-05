@@ -17,6 +17,6 @@
 
 <main style="display: flex; align-items: center">
 
-  <app-user-view [vID]="this.authService.selfVid"></app-user-view>
+  <app-user-view *ngIf="authService.selfVid != ''" [vID]="this.authService.selfVid"></app-user-view>
 </main>
 

@@ -56,8 +56,8 @@ export class PostEditViewComponent {
         title: this.title,
         attachments: this.attachments
       }
-      this.mainService.updatePost(newPost)
-      // this._bottomSheetRef.dismiss();
+      this.mainService.deletePost(this.post.cid);
+      this.mainService.postPost(newPost);
     });
   }
 }
