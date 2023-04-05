@@ -49,4 +49,9 @@ insert into attachment values('6', '9932', 'link', 'www.github.com');
 insert into attachment values('7', '8168', 'video', 'www.youtube.com/watch?v=vS3_72Gb-bl');
 insert into attachment values('8', '554', 'text', 'I think that there are many things we should consider regarding laws relating to gambling.');
 insert into attachment values('9', '9002', 'image', 'www.image3.com');
-                              
+
+insert into views values('10302', '158');
+insert into views values('10302', '9932');
+insert into views values('778', '9932');
+insert into views values('41', '554');
+insert into views values('873', '9932');
