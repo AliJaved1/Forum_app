@@ -1,13 +1,13 @@
-insert into visitor values('192.010.303', 50, '10302', '01-SEP-22');
-insert into visitor values('192.163.093', 1, '20530', '28-FEB-19');
-insert into visitor values('192.156.525', 1354, '778', '10-JAN-20');
-insert into visitor values('192.321.444', 642, '1053', '12-JUN-21');
-insert into visitor values('192.111.593', 123, '10111', '22-AUG-12');
-insert into visitor values('192.121.545', 12533, '17', '17-MAR-23');
-insert into visitor values('192.101.351', 53433, '3350', '05-APR-11');
-insert into visitor values('192.113.041', 32987, '351', '31-DEC-22');
-insert into visitor values('192.164.013', 25921, '41', '03-JUL-13');
-insert into visitor values('192.151.343', 8932, '873', '04-APR-15');
+insert into visitor values('192.010.303', 50, '10302', '01-SEP-22', 'Bob');
+insert into visitor values('192.163.093', 1, '20530', '28-FEB-19', 'Alice');
+insert into visitor values('192.156.525', 1354, '778', '10-JAN-20', 'Jonathan');
+insert into visitor values('192.321.444', 642, '1053', '12-JUN-21', 'Faker');
+insert into visitor values('192.111.593', 123, '10111', '22-AUG-12', 'doublelift');
+insert into visitor values('192.121.545', 12533, '17', '17-MAR-23', 'soccerplayer1');
+insert into visitor values('192.101.351', 53433, '3350', '05-APR-11', 'kosmos');
+insert into visitor values('192.113.041', 32987, '351', '31-DEC-22', 'zeezan');
+insert into visitor values('192.164.013', 25921, '41', '03-JUL-13', 'snakes');
+insert into visitor values('192.151.343', 8932, '873', '04-APR-15', 'cr7ronaldo');
 
 insert into guest values('10302');
 insert into guest values('20530');
