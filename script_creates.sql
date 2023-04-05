@@ -38,3 +38,8 @@ CREATE TABLE Attachment
 	content varchar(1000),
 	FOREIGN KEY (pid) REFERENCES Post(pid)
 	ON DELETE CASCADE);
+
+CREATE TABLE Views
+	(vid varchar(36),
+	 pid varchar(36),
+	 PRIMARY KEY (vid, pid));
