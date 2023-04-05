@@ -10,10 +10,12 @@ import {Observable} from "rxjs";
 export class PostListViewComponent {
   postIDs: string[] = [];
   wideMode = false;
+  loaded = false;
 
   constructor(private mainService: MainService) {
     mainService.getRecommendPostsCids().subscribe((postIDs: string[]) => {
       this.postIDs = postIDs;
+      this.loaded = true;
     });
     this.onResize(null);
   }

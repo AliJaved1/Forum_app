@@ -189,12 +189,17 @@ router.route('/user/:vid').get(function (request, response) {
                     doRelease(connection);
                     return;
                 }
-                console.log("RESULTSET:" + JSON.stringify(result));
+                console.log("RESULTSET:" + result);
+
                 User = {
-                    vid: result.vid, isMember: true, name: result.name, experience: result.experience, 
+                    vid: result.vid, isMember: true, name: result.name, experience: result.experience,
                     thumbnailID: "", email: result.email, about: result.about
                 }
-                
+                //
+                //                 // User = {
+                //                 //     vid: "result.vid", isMember: true, name: "result.name", experience: "result.experience",
+                //     thumbnailID: "", email: "result.email", about: "result.about"
+                // }
                 response.json(User);
                 doRelease(connection);
         });
@@ -414,9 +419,14 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
                 result.rows.forEach(function (element) {
-                    posts.push(element.cid);
+                    console.log(element)
+                    posts.push(element["CID"]);
                 }, this);
                 response.json(posts);
+                console.log("--------------------------------")
+                console.log("--------------------------------")
+                console.log(result);
+                console.log("POSTS:" + JSON.stringify(posts));
                 doRelease(connection);
             });
     });
@@ -483,7 +493,12 @@ router.route('/post/:cid').get(function (request, response) {
                     cid: result.vid, title: result.title, authorVid: result.vid, authorName: result.name, 
                     engagement: 0.5, perception: 0.5, attachments: []
                 }
-                
+
+                // Post = {
+                //     cid: "result.vid", title: "result.title", authorVid: "result.vid", authorName: "result.name",
+                //     engagement: 0.5, perception: 0.5, attachments: []
+                // }
+                //
                 response.json(Post);
                 doRelease(connection);
         });
