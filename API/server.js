@@ -5,6 +5,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var oracledb = require('oracledb');
 const { v4: uuidv4 } = require('uuid');
+const e = require('express');
 
 var PORT = process.env.PORT || 8089;
 
@@ -178,8 +179,6 @@ router.route('/user/:vid').get(function (request, response) {
 
         vid = request.params.vid;
 
-
-
         connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
             { outFormat: oracledb.OBJECT },
             function (err, result) {
@@ -191,15 +190,12 @@ router.route('/user/:vid').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + result);
 
+                element = result.rows[0];
+
                 User = {
-                    vid: result.vid, isMember: true, name: result.name, experience: result.experience,
-                    thumbnailID: "", email: result.email, about: result.about
+                    vid: element["VID"], isMember: true, name: element["NAME"], experience: element["EXPERIENCE"],
+                    thumbnailID: "", email: element["EMAIL"], about: ""
                 }
-                //
-                //                 // User = {
-                //                 //     vid: "result.vid", isMember: true, name: "result.name", experience: "result.experience",
-                //     thumbnailID: "", email: "result.email", about: "result.about"
-                // }
                 response.json(User);
                 doRelease(connection);
         });
@@ -422,10 +418,6 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                     posts.push(element["CID"]);
                 }, this);
                 response.json(posts);
-                console.log("--------------------------------")
-                console.log("--------------------------------")
-                console.log(result);
-                console.log("POSTS:" + JSON.stringify(posts));
                 doRelease(connection);
             });
     });
@@ -456,7 +448,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
                 result.rows.forEach(function (element) {
-                    posts.push(element.cid);
+                    posts.push(element["CID"]);
                 }, this);
                 response.json(posts);
                 doRelease(connection);
@@ -488,8 +480,10 @@ router.route('/post/:cid').get(function (request, response) {
                     return;
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
+                element = result.rows[0];
+
                 Post = {
-                    cid: result.rows["CID"], title: result.rows["TITLE"], authorVid: result.rows[VID], authorName: result.rows["NAME"],
+                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
                     engagement: 0.5, perception: 0.5, attachments: []
                 }
                 response.json(Post);
