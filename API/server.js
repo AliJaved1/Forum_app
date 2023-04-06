@@ -489,7 +489,7 @@ router.route('/post/:cid').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
                 Post = {
-                    cid: result.rows["CID"], title: result.rows["TITLE"], authorVid: result.rows[VID], authorName: result.rows["NAME"],
+                    cid: result.rows["CID"], title: result.rows["TITLE"], authorVid: result.rows["VID"], authorName: result.rows["NAME"],
                     engagement: 0.5, perception: 0.5, attachments: []
                 }
                 response.json(Post);

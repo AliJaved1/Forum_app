@@ -11,7 +11,7 @@ import {MainService} from "../../data/main.service";
   styleUrls: ['./post-view.component.css']
 })
 export class PostViewComponent {
-  @Input() postID: string = "123";
+  @Input() postID: string = "9932";
   post: Post = dummyPost()
 
   constructor(private dialog: MatDialog, mainService: MainService) {

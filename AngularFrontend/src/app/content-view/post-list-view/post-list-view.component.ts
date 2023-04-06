@@ -16,6 +16,7 @@ export class PostListViewComponent {
     mainService.getRecommendPostsCids().subscribe((postIDs: string[]) => {
       this.postIDs = postIDs;
       this.loaded = true;
+      console.log(this.postIDs)
     });
     this.onResize(null);
   }

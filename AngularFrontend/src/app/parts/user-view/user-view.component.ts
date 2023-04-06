@@ -8,7 +8,7 @@ import {MainService} from "../../data/main.service";
   styleUrls: ['./user-view.component.css']
 })
 export class UserViewComponent {
-  @Input() vID: string = "123";
+  @Input() vID: string = "9932";
   user: User = dummyUser();
   loadFigure = false;
 
