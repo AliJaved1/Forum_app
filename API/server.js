@@ -419,7 +419,6 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
                 result.rows.forEach(function (element) {
-                    console.log(element)
                     posts.push(element["CID"]);
                 }, this);
                 response.json(posts);
@@ -490,15 +489,9 @@ router.route('/post/:cid').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
                 Post = {
-                    cid: result.vid, title: result.title, authorVid: result.vid, authorName: result.name, 
+                    cid: result.rows["CID"], title: result.rows["TITLE"], authorVid: result.rows[VID], authorName: result.rows["NAME"],
                     engagement: 0.5, perception: 0.5, attachments: []
                 }
-
-                // Post = {
-                //     cid: "result.vid", title: "result.title", authorVid: "result.vid", authorName: "result.name",
-                //     engagement: 0.5, perception: 0.5, attachments: []
-                // }
-                //
                 response.json(Post);
                 doRelease(connection);
         });
