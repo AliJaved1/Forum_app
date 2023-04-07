@@ -91,15 +91,15 @@ export class MainService {
   }
 
   getPost(cid: string): Observable<Post> {
-      if (this.testMode) {
-        return of(dummyPost()).pipe(delay(600));
-      }
-
-      return this.http.get<Post>(this.url + "post/" + cid).pipe(catchError(err => {
-        // alert("failed to fetch post");
-        return of(dummyPost());
-      }))
+    if (this.testMode) {
+      return of(dummyPost()).pipe(delay(600));
     }
+
+    return this.http.get<Post>(this.url + "post/" + cid).pipe(catchError(err => {
+      // alert("failed to fetch post");
+      return of(dummyPost());
+    }))
+  }
 
   postPost(post: Post) {
     if (this.testMode) {
@@ -118,30 +118,33 @@ export class MainService {
       return;
     }
     this.http.delete(this.url + "post/" + cid).subscribe(res => {
-      console.log(res)
+      console.log("post deleted")
     }, err => {
       alert("failed to delete post");
     })
   }
 
-  likeContent(cid: string) {
+  likeContent(cid: string, vid: string) {
     if (this.testMode) {
       return;
     }
-    this.http.get(this.url + "perception/like/" + cid).pipe(catchError(err => {
+    this.http.get(this.url + "perception/like/" + cid + "/" + vid).subscribe(res => {
+      console.log("content liked")
+    }, err => {
       alert("failed to like content");
-      return of();
-    }));
+    });
   }
 
   dislikeContent(cid: string, vid: string) {
     if (this.testMode) {
       return;
     }
-    this.http.get(this.url + "perception/dislike/" + cid).pipe(catchError(err => {
-      alert("failed to dislike content");
-      return of();
-    }));
+    this.http.get(this.url + "perception/dislike/" + cid + "/" + vid).subscribe(res => {
+        console.log("content disliked")
+      }, err => {
+        alert("failed to dislike content");
+      }
+    );
   }
 
   getAttachment(attid: string): Observable<Attachment> {

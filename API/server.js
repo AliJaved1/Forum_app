@@ -573,7 +573,7 @@ router.route('/post/:cid').get(function (request, response) {
 
 
 // Upvote a post.
-router.route('/perception/like/:cid/:vid').put(function (request, response) {
+router.route('/perception/like/:cid/:vid').get(function (request, response) {
     console.log("UPVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -583,8 +583,9 @@ router.route('/perception/like/:cid/:vid').put(function (request, response) {
         }
 
         var body = request.body;
-        var cid = request.params['cid'];
-        var vid = request.params['vid'];
+        var cid = request.params.cid;
+        // var cid = request.params['cid'];
+        // var vid = request.params['vid'];
 
         connection.execute("UPDATE Post SET upvotes = upvotes + 1 WHERE pid=:cid",
             [cid],
