@@ -314,6 +314,38 @@ router.route('/post').post(function (request, response) {
         //     ('00' + date.getUTCDate()).slice(-2)
         console.log("date: " + date);
 
+        // UPDATED POST BACKEND
+        connection.execute("INSERT INTO Post (pid, mid, upvotes, downvotes, title)" +
+                    "VALUES(:cid, :mid, :upvotes, :downvotes, :title)", [cid, post.authorVid, 0, 0, post.title],
+                    {outFormat: oracledb.OBJECT},
+                    function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            response.status(500).send("Error creating Post");
+                            doRelease(connection);
+                            return;
+                        }
+                        // TODO: New attachment tables
+                        for (attachment in post.attachments) {
+                            attid = uuidv4();
+                
+                            connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
+                                "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
+                                {outFormat: oracledb.OBJECT},
+                                function (err, result) {
+                                    if (err) {
+                                        console.error(err.message);
+                                        response.status(500).send("Error creating attachment log");
+                                        doRelease(connection);
+                                        return;
+                                    }
+                                    response.end();
+                                    doRelease(connection);
+                                });
+                        }
+                    });
+        
+        // DO NOT NEED USERCONTENT -  IGNOREUSERCONTENTLINE 
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
             "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
             {outFormat: oracledb.OBJECT},
@@ -375,7 +407,9 @@ router.route('/post/:cid').delete(function (request, response) {
         var cid = request.params.cid;
 
         // will delete cids, which cascades with pid, which cascades with attid
-        connection.execute("DELETE FROM UserContent WHERE cid = :cid",
+        // UPDATED POST DELETE CODE (slightly modified), old code: "DELETE FROM Post WHERE cid = :cid"
+        // will just delete the post based on post PID
+        connection.execute("DELETE FROM Post WHERE pid = :cid",
             [cid],
             function (err, result) {
                 if (err) {
@@ -433,8 +467,9 @@ router.route('/posts/user/:vid').get(function (request, response) {
         console.log("After connection");
 
         vid = request.params.vid;
-
-        connection.execute("SELECT cid FROM UserContent WHERE mid = :cid", [vid],
+        // UPDATED GET ALL POSTS
+        // old code: "SELECT cid FROM UserContent WHERE mid = :cid"
+        connection.execute("SELECT pid FROM Post WHERE mid = :cid", [vid],
             {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
@@ -470,7 +505,22 @@ router.route('/post/:cid').get(function (request, response) {
         finalPost = {};
         attach = [];
 
+        // updated post info --> UPDATEDPOSTINFO
 
+        connection.execute("SELECT DISTINCT pid, mid, name, upvotes, downvotes FROM Visitor v, Post p, WHERE p.pid = :cid AND p.mid = v.vid", [cid],
+            {outFormat: oracledb.OBJECT},
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    responmse.status(500).send("Error getting data from DB");
+                    doRelease(connection);
+                    return;
+                }
+                console.log("RESULTSET:" + JSON.stringify(result));
+                element = result.rows[0];
+            })
+
+        // Seems overly complicated --> OLD GET POST INFO // MAYBE DELETE EVERYTHING BELOW THIS?
         connection.execute("SELECT DISTINCT cid, title, vid, name, upvotes, downvotes FROM Visitor v, UserContent u, Post p WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
             {outFormat: oracledb.OBJECT},
             function (err, result) {
@@ -632,6 +682,24 @@ router.route('/comment').post(function (request, response) {
         comment = request.body;
         cid = uuidv4();
 
+        // New code for create comment
+
+        connection.execute("INSERT INTO UserComment (coid, pid, mid, upvotes, downvotes, content)" +
+            "VALUES(:coid, :pid, :mid, :upvotes, :downvotes, :content", [cid, _____, comment.authorVid, 0, 0, comment.content],
+            {outFormat: oracledb.OBJECT},
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error creating comment");
+                    doRelease(connection);
+                    return;
+                }
+                response.json(cid);
+                doRelease(connection);
+            });
+
+        // OUTDATED CREATE COMMENT BELOW
+
         // var date;
         // date = new Date();
         // date = date.getUTCFullYear() + '-' +
@@ -703,8 +771,11 @@ router.route('/comment/:cid').delete(function (request, response) {
             return;
         }
 
+        // UPDATED DELETE FROM USER COMMENT
+        // OLD CODE: "DELETE FROM UserContent WHERE cid = :coid"
+
         var coid = request.params.id;
-        connection.execute("DELETE FROM UserContent WHERE cid = :coid",
+        connection.execute("DELETE FROM UserComment WHERE coid = :coid",
             [coid],
             function (err, result) {
                 if (err) {
