@@ -220,6 +220,7 @@ router.route('/user/:id').delete(function (request, response) {
 
         connection.execute("DELETE FROM Visitor WHERE vid = :vid",
             [vid],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -425,6 +426,7 @@ router.route('/post/:cid').delete(function (request, response) {
         // will just delete the post based on post PID
         connection.execute("DELETE FROM Post WHERE pid = :cid",
             [cid],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -771,6 +773,7 @@ router.route('/comment/:cid').delete(function (request, response) {
         var coid = request.params.id;
         connection.execute("DELETE FROM UserComment WHERE coid = :coid",
             [coid],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
