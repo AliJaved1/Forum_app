@@ -470,7 +470,25 @@ router.route('/post/:cid').get(function (request, response) {
         cid = request.params.cid;
     
 
-        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content, type FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+        connection.execute("SELECT DISTINCT cid, title, vid, name, upvotes, downvotes FROM Visitor v, UserContent u, Post p WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+            { outFormat: oracledb.OBJECT },
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error getting data from DB");
+                    doRelease(connection);
+                    return;
+                }
+                console.log("RESULTSET:" + JSON.stringify(result));
+                element = result.rows[0];
+
+                Post = {
+                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
+                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"])
+                }
+        });
+
+        connection.execute("SELECT attid, type, content FROM Attachment WHERE pid = :cid", [cid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -485,16 +503,14 @@ router.route('/post/:cid').get(function (request, response) {
                 attach = [];
 
                 result.rows.forEach(function (element) {
-                    attach.push({attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"]});
+                    attach.push({ attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"] });
                 }, this);
 
-                Post = {
-                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: attach
-                }
-                response.json(Post);
-                doRelease(connection);
-        });
+                Post.attachments = attach;
+            });
+
+        response.json(Post);
+        doRelease(connection);
     });
 });
 
