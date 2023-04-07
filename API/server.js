@@ -249,6 +249,7 @@ router.route('/user/:vid').put(function (request, response) {
 
         connection.execute("UPDATE Visitor SET NAME=:name WHERE vid=:vid",
             [name, vid],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -573,7 +574,7 @@ router.route('/post/:cid').get(function (request, response) {
 
 
 // Upvote a post.
-router.route('/perception/like/:cid/:vid').get(function (request, response) {
+router.route('/perception/like/:cid/:vid').put(function (request, response) {
     console.log("UPVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -584,11 +585,10 @@ router.route('/perception/like/:cid/:vid').get(function (request, response) {
 
         var body = request.body;
         var cid = request.params.cid;
-        // var cid = request.params['cid'];
-        // var vid = request.params['vid'];
 
         connection.execute("UPDATE Post SET upvotes = upvotes + 1 WHERE pid=:cid",
             [cid],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -618,6 +618,7 @@ router.route('/perception/dislike/:cid/:vid').put(function (request, response) {
 
         connection.execute("UPDATE Post SET downvotes = downvotes + 1 WHERE pid=:cid",
             [cid],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -745,6 +746,7 @@ router.route('/user/:id').put(function (request, response) {
 
         connection.execute("UPDATE UserComment SET CONTENT=:content WHERE coid=:id",
             [comment.content, id],
+            { autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
