@@ -350,10 +350,11 @@ router.route('/post').post(function (request, response) {
                                 doRelease(connection);
                                 return;
                             }
-                            response.end();
-                            doRelease(connection);
                         });
                 }
+
+                response.end();
+                doRelease(connection);
             });
 
         // DO NOT NEED USERCONTENT -  IGNOREUSERCONTENTLINE 
@@ -518,7 +519,7 @@ router.route('/post/:cid').get(function (request, response) {
 
         // updated post info --> UPDATEDPOSTINFO
 
-        connection.execute("SELECT DISTINCT pid, mid, name, upvotes, downvotes FROM Visitor v, Post p, WHERE p.pid = :cid AND p.mid = v.vid", [cid],
+        connection.execute("SELECT DISTINCT pid, mid, name, upvotes, downvotes FROM Visitor v, Post p WHERE p.pid = :cid AND p.mid = v.vid", [cid],
             {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
@@ -529,25 +530,6 @@ router.route('/post/:cid').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
                 element = result.rows[0];
-            })
-
-        // Seems overly complicated --> OLD GET POST INFO // MAYBE DELETE EVERYTHING BELOW THIS?
-        connection.execute("SELECT DISTINCT cid, title, vid, name, upvotes, downvotes FROM Visitor v, UserContent u, Post p WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
-            {outFormat: oracledb.OBJECT},
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                element = result.rows[0];
-
-                // Post = {
-                //     cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                //     engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"])
-                // }
 
                 finalPost.cid = element["CID"];
                 finalPost.title = element["TITLE"];
@@ -557,11 +539,8 @@ router.route('/post/:cid').get(function (request, response) {
                 finalPost.perception = element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]);
                 finalPost.attachments = [];
 
-                console.log("-----------------------------------")
-                console.log(finalPost)
-
                 connection.execute("SELECT attid, type, content FROM Attachment WHERE pid = :cid", [cid],
-                    {outFormat: oracledb.OBJECT},
+                    { outFormat: oracledb.OBJECT },
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
@@ -573,16 +552,16 @@ router.route('/post/:cid').get(function (request, response) {
                         element = result.rows[0];
 
                         result.rows.forEach(function (element) {
-                            attach.push({attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"]});
+                            attach.push({ attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"] });
                         }, this);
 
                         finalPost.attachments = attach;
                         console.log("FINAL POST:" + JSON.stringify(finalPost))
-
-                        response.json(finalPost);
-                        doRelease(connection);
                     });
-            });
+
+                response.json(finalPost);
+                doRelease(connection);
+            })
     });
 });
 
