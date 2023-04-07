@@ -399,7 +399,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
         }
         console.log("After connection");
     
-        connection.execute("SELECT cid FROM UserContent", {},
+        connection.execute("SELECT PID FROM POST", {},
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -411,7 +411,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
                 result.rows.forEach(function (element) {
-                    posts.push(element["CID"]);
+                    posts.push(element["PID"]);
                 }, this);
                 response.json(posts);
                 doRelease(connection);
@@ -482,7 +482,7 @@ router.route('/post/:cid').get(function (request, response) {
                 element = result.rows[0];
 
                 Post = {
-                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
+                    cid: element["PID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
                     engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"])
                 }
 
