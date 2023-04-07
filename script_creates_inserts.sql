@@ -90,7 +90,7 @@ insert into post values('8168', 947, 5, 'Elden Ring most played game of 2022');
 insert into post values('554', 8811, 23, 'Why dont we have any moderators on this site!?!?');
 insert into post values('9002', 1000, 9923, 'Unpopular Opinion: water sucks');
 
-insert into attachment values('5', '158', 'image', 'https://imgur.com/gallery/UJ75m1c');
+insert into attachment values('5', '158', 'image', 'https://i.imgur.com/UJ75m1c.jpeg');
 insert into attachment values('6', '9932', 'link', 'www.github.com');
 insert into attachment values('7', '8168', 'video', 'www.youtube.com/watch?v=vS3_72Gb-bl');
 insert into attachment values('8', '554', 'text', 'I think that there are many things we should consider regarding laws relating to gambling.');
