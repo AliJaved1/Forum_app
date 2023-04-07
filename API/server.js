@@ -179,7 +179,7 @@ router.route('/user/:vid').get(function (request, response) {
 
         vid = request.params.vid;
 
-        connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
+        connection.execute("SELECT DISTINCT vid, name, experience, email FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -470,7 +470,7 @@ router.route('/post/:cid').get(function (request, response) {
         cid = request.params.cid;
     
 
-        connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
