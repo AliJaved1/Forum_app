@@ -497,7 +497,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
                 result.rows.forEach(function (element) {
-                    posts.push(element["CID"]);
+                    posts.push(element["PID"]);
                 }, this);
                 response.json(posts);
                 doRelease(connection);

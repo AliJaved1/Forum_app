@@ -38,7 +38,12 @@ export class UserMainViewComponent implements OnInit{
   }
 
   ngOnInit(): void {
+
+    console.log(">>>>>>>>>>>>>>")
+    console.log(this.user.vid)
     this.mainService.getUserPostsCids(this.user.vid).subscribe(posts => {
+      console.log("<<<<<<<<<<<<<<<")
+      console.log(posts)
       this.postCids = posts;
     })
   }

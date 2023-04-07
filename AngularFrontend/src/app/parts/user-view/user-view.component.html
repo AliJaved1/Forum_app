@@ -7,6 +7,6 @@
     </div>
   </button>
   <mat-menu #mainView="matMenu" xPosition="before" yPosition="below">
-    <app-user-main-view [user]="user"></app-user-main-view>
+    <app-user-main-view *ngIf="loadFigure" [user]="user"></app-user-main-view>
   </mat-menu>
 </main>
