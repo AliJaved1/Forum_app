@@ -330,8 +330,8 @@ router.route('/post').post(function (request, response) {
                 }
             });
 
-        connection.execute("INSERT INTO Post (pid, votes, title)" +
-            "VALUES(:cid, :votes, :title)", [cid, 0, post.title],
+        connection.execute("INSERT INTO Post (pid, upvotes, downvotes title)" +
+            "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -456,7 +456,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
     });
 });
 
-// Get a post's information TODO
+// Get a post's information
 router.route('/post/:cid').get(function (request, response) {
     console.log("GET POST INFO");
     oracledb.getConnection(connectionProperties, function (err, connection) {
@@ -470,7 +470,7 @@ router.route('/post/:cid').get(function (request, response) {
         cid = request.params.cid;
     
 
-        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -484,7 +484,7 @@ router.route('/post/:cid').get(function (request, response) {
 
                 Post = {
                     cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                    engagement: 0.5, perception: 0.5, attachments: []
+                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: []
                 }
                 response.json(Post);
                 doRelease(connection);
@@ -493,9 +493,9 @@ router.route('/post/:cid').get(function (request, response) {
 });
 
 
-// Upvote a post. TODO
-router.route('/user/:id').put(function (request, response) {
-    console.log("EDIT POST:" + request.params.id);
+// Upvote a post.
+router.route('/perception/like/:cid/:vid').put(function (request, response) {
+    console.log("UPVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
             console.error(err.message);
@@ -504,14 +504,44 @@ router.route('/user/:id').put(function (request, response) {
         }
 
         var body = request.body;
-        var id = request.params.id;
+        var cid = request.params['cid'];
+        var vid = request.params['vid'];
 
-        connection.execute("UPDATE Post SET EMAIL=:email, ABOUT=:about WHERE mid=:id",
-            [body.name, body.about, id],
+        connection.execute("UPDATE Post SET upvotes = upvotes + 1 WHERE pid=:cid",
+            [cid],
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error updating employee to DB");
+                    response.status(500).send("Error upvoting");
+                    doRelease(connection);
+                    return;
+                }
+                response.end();
+                doRelease(connection);
+            });
+    });
+});
+
+// Downvote a post.
+router.route('/perception/dislike/:cid/:vid').put(function (request, response) {
+    console.log("UPVOTE POST:" + request.params.cid);
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+
+        var body = request.body;
+        var cid = request.params['cid'];
+        var vid = request.params['vid'];
+
+        connection.execute("UPDATE Post SET downvotes = downvotes + 1 WHERE pid=:cid",
+            [cid],
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error upvoting");
                     doRelease(connection);
                     return;
                 }
