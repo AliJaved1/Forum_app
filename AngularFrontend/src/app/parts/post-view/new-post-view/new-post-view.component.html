@@ -1,11 +1,13 @@
 <main>
   <mat-form-field class="example-full-width">
     <mat-label>Title</mat-label>
-    <input type="text" matInput [formControl]="titleFormControl" [errorStateMatcher]="matcher"
+<!--    <input type="text" matInput [formControl]="titleFormControl" [errorStateMatcher]="matcher"-->
+<!--           placeholder="Ex. my first post">-->
+<!--    <mat-error *ngIf="titleFormControl.hasError('required')">-->
+<!--      Title is <strong>required</strong>-->
+<!--    </mat-error>-->
+    <input type="text" matInput [(ngModel)]="title"
            placeholder="Ex. my first post">
-    <mat-error *ngIf="titleFormControl.hasError('required')">
-      Title is <strong>required</strong>
-    </mat-error>
   </mat-form-field>
 
 

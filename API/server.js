@@ -31,7 +31,17 @@ totalVotes = 0;
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({type: '*/*'}));
-
+// app.use(async (req, res, next) => {
+//     if (req.currentRequest) {
+//         await req.currentRequest;
+//     }
+//     req.currentRequest = new Promise((resolve) => {
+//         setTimeout(() => {
+//             resolve();
+//         }, 100);
+//     });
+//     next();
+// });
 var router = express.Router();
 
 router.use(function (request, response, next) {
@@ -43,6 +53,7 @@ router.use(function (request, response, next) {
     response.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
+
 
 /* POSTS ENDPOINTS*/
 
@@ -316,79 +327,79 @@ router.route('/post').post(function (request, response) {
 
         // UPDATED POST BACKEND
         connection.execute("INSERT INTO Post (pid, mid, upvotes, downvotes, title)" +
-                    "VALUES(:cid, :mid, :upvotes, :downvotes, :title)", [cid, post.authorVid, 0, 0, post.title],
-                    {outFormat: oracledb.OBJECT},
-                    function (err, result) {
-                        if (err) {
-                            console.error(err.message);
-                            response.status(500).send("Error creating Post");
-                            doRelease(connection);
-                            return;
-                        }
-                        // TODO: New attachment tables
-                        for (attachment in post.attachments) {
-                            attid = uuidv4();
-                
-                            connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
-                                "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-                                {outFormat: oracledb.OBJECT},
-                                function (err, result) {
-                                    if (err) {
-                                        console.error(err.message);
-                                        response.status(500).send("Error creating attachment log");
-                                        doRelease(connection);
-                                        return;
-                                    }
-                                    response.end();
-                                    doRelease(connection);
-                                });
-                        }
-                    });
-        
-        // DO NOT NEED USERCONTENT -  IGNOREUSERCONTENTLINE 
-        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
+            "VALUES(:cid, :mid, :upvotes, :downvotes, :title)", [cid, post.authorVid, 0, 0, post.title],
             {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error creating userContent");
+                    response.status(500).send("Error creating Post");
                     doRelease(connection);
                     return;
                 }
-                response.end();
-                doRelease(connection);
+                // TODO: New attachment tables
+                for (attachment in post.attachments) {
+                    attid = uuidv4();
 
-                // connection.execute("INSERT INTO Post (pid, upvotes, downvotes,title)" +
-                //     "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
-                //     {outFormat: oracledb.OBJECT},
-                //     function (err, result) {
-                //         if (err) {
-                //             console.error(err.message);
-                //             response.status(500).send("Error creating Post");
-                //             doRelease(connection);
-                //             return;
-                //         }
-                //         // TODO: New attachment tables
-                //         for (attachment in post.attachments) {
-                //             attid = uuidv4();
-                //
-                //             connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
-                //                 "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-                //                 {outFormat: oracledb.OBJECT},
-                //                 function (err, result) {
-                //                     if (err) {
-                //                         console.error(err.message);
-                //                         response.status(500).send("Error creating attachment log");
-                //                         doRelease(connection);
-                //                         return;
-                //                     }
-                //                     response.end();
-                //                     doRelease(connection);
-                //                 });
-                //         }
-                //     });
+                    connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
+                        "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
+                        {outFormat: oracledb.OBJECT},
+                        function (err, result) {
+                            if (err) {
+                                console.error(err.message);
+                                response.status(500).send("Error creating attachment log");
+                                doRelease(connection);
+                                return;
+                            }
+                            response.end();
+                            doRelease(connection);
+                        });
+                }
             });
+
+        // DO NOT NEED USERCONTENT -  IGNOREUSERCONTENTLINE 
+        // connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
+        //     "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
+        //     {outFormat: oracledb.OBJECT},
+        //     function (err, result) {
+        //         if (err) {
+        //             console.error(err.message);
+        //             response.status(500).send("Error creating userContent");
+        //             doRelease(connection);
+        //             return;
+        //         }
+        //         response.end();
+        //         doRelease(connection);
+
+        connection.execute("INSERT INTO Post (pid, upvotes, downvotes,title)" +
+            "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
+            {outFormat: oracledb.OBJECT},
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error creating Post");
+                    doRelease(connection);
+                    return;
+                }
+                // TODO: New attachment tables
+                for (attachment in post.attachments) {
+                    attid = uuidv4();
+
+                    connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
+                        "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
+                        {outFormat: oracledb.OBJECT},
+                        function (err, result) {
+                            if (err) {
+                                console.error(err.message);
+                                response.status(500).send("Error creating attachment log");
+                                doRelease(connection);
+                                return;
+                            }
+                            response.end();
+                            doRelease(connection);
+                        });
+                }
+            });
+        // });
 
 
     });
@@ -512,7 +523,7 @@ router.route('/post/:cid').get(function (request, response) {
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    responmse.status(500).send("Error getting data from DB");
+                    response.status(500).send("Error getting data from DB");
                     doRelease(connection);
                     return;
                 }
