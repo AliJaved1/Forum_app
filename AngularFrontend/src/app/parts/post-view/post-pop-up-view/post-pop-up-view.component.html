@@ -4,7 +4,7 @@
     {{post.title}}
     <div style="display: flex; align-items: center">
       <app-user-view [vID]="post.authorVid"></app-user-view>
-      <ng-container *ngIf="post.authorVid != auth.selfVid">
+      <ng-container *ngIf="post.authorVid == auth.selfVid">
         <div style="width: 10px"></div>
         <button mat-icon-button (click)="editPost()" mat-dialog-close="">
           <mat-icon>edit</mat-icon>

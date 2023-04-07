@@ -308,11 +308,13 @@ router.route('/post').post(function (request, response) {
 
         post = request.body;
 
-        if (post.cid == "") {
-            cid = uuidv4();
-        } else {
-            cid = post.cid;
-        }
+        // if (post.cid == "") {
+        //     cid = uuidv4();
+        // } else {
+        //     cid = post.cid;
+        // }
+
+        cid = uuidv4();
 
         console.log("vid: " + post.authorVid);
         console.log("cid: " + cid);
@@ -371,35 +373,35 @@ router.route('/post').post(function (request, response) {
         //         response.end();
         //         doRelease(connection);
 
-        connection.execute("INSERT INTO Post (pid, upvotes, downvotes,title)" +
-            "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
-            { outFormat: oracledb.OBJECT, autoCommit: true },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating Post");
-                    doRelease(connection);
-                    return;
-                }
-                // TODO: New attachment tables
-                for (attachment in post.attachments) {
-                    attid = uuidv4();
-
-                    connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
-                        "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-                        { outFormat: oracledb.OBJECT, autoCommit: true },
-                        function (err, result) {
-                            if (err) {
-                                console.error(err.message);
-                                response.status(500).send("Error creating attachment log");
-                                doRelease(connection);
-                                return;
-                            }
-                            response.end();
-                            doRelease(connection);
-                        });
-                }
-            });
+        // connection.execute("INSERT INTO Post (pid, upvotes, downvotes,title)" +
+        //     "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
+        //     { outFormat: oracledb.OBJECT, autoCommit: true },
+        //     function (err, result) {
+        //         if (err) {
+        //             console.error(err.message);
+        //             response.status(500).send("Error creating Post");
+        //             doRelease(connection);
+        //             return;
+        //         }
+        //         // TODO: New attachment tables
+        //         for (attachment in post.attachments) {
+        //             attid = uuidv4();
+        //
+        //             connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
+        //                 "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
+        //                 { outFormat: oracledb.OBJECT, autoCommit: true },
+        //                 function (err, result) {
+        //                     if (err) {
+        //                         console.error(err.message);
+        //                         response.status(500).send("Error creating attachment log");
+        //                         doRelease(connection);
+        //                         return;
+        //                     }
+        //                     response.end();
+        //                     doRelease(connection);
+        //                 });
+        //         }
+        //     });
         // });
 
 
@@ -519,9 +521,9 @@ router.route('/post/:cid').get(function (request, response) {
 
         // updated post info --> UPDATEDPOSTINFO
 
-        result = await connection.execute();
+        // result = await connection.execute();
 
-        connection.execute("SELECT DISTINCT pid, mid, name, upvotes, downvotes FROM Visitor v, Post p WHERE p.pid = :cid AND p.mid = v.vid", [cid],
+        connection.execute("SELECT DISTINCT pid, mid, name, upvotes, downvotes, title FROM Visitor v, Post p WHERE p.pid = :cid AND p.mid = v.vid", [cid],
             {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
@@ -533,9 +535,9 @@ router.route('/post/:cid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 element = result.rows[0];
 
-                finalPost.cid = element["CID"];
+                finalPost.cid = element["PID"];
                 finalPost.title = element["TITLE"];
-                finalPost.authorVid = element["VID"];
+                finalPost.authorVid = element["MID"];
                 finalPost.authorName = element["NAME"];
                 finalPost.engagement = 0.5;
                 finalPost.perception = element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]);
@@ -559,10 +561,10 @@ router.route('/post/:cid').get(function (request, response) {
 
                         finalPost.attachments = attach;
                         console.log("FINAL POST:" + JSON.stringify(finalPost))
+                        response.json(finalPost);
+                        doRelease(connection);
                     });
 
-                response.json(finalPost);
-                doRelease(connection);
             })
     });
 });

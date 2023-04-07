@@ -23,6 +23,7 @@ export class PostPopUpViewComponent{
   }
 
   deletePost() {
+    console.log(this.post)
     this.mainService.deletePost(this.post.cid);
   }
 }
