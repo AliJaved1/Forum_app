@@ -468,6 +468,9 @@ router.route('/post/:cid').get(function (request, response) {
         console.log("After connection");
     
         cid = request.params.cid;
+
+        finalPost = {};
+        attach = [];
     
 
         connection.execute("SELECT DISTINCT cid, title, vid, name, upvotes, downvotes FROM Visitor v, UserContent u, Post p WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
@@ -486,6 +489,8 @@ router.route('/post/:cid').get(function (request, response) {
                     cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
                     engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"])
                 }
+
+                finalPost = Post;
         });
 
         connection.execute("SELECT attid, type, content FROM Attachment WHERE pid = :cid", [cid],
@@ -500,16 +505,14 @@ router.route('/post/:cid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 element = result.rows[0];
 
-                attach = [];
-
                 result.rows.forEach(function (element) {
                     attach.push({ attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"] });
                 }, this);
-
-                Post.attachments = attach;
             });
 
-        response.json(Post);
+        finalPost.attachments = attach;
+
+        response.json(finalPost);
         doRelease(connection);
     });
 });
