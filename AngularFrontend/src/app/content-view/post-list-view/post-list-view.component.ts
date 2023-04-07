@@ -14,7 +14,7 @@ export class PostListViewComponent implements OnInit{
   constructor(public mainService: MainService) {}
   ngOnInit(): void {
     this.mainService.getRecommendPostsCids().subscribe((postIDs: string[]) => {
-      this.mainService.recommendPosts = postIDs.slice(0,1);
+      this.mainService.recommendPosts = postIDs;
       this.loaded = true;
       console.log("recommendPosts:")
       console.log(this.mainService.recommendPosts)

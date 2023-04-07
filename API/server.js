@@ -4,7 +4,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var oracledb = require('oracledb');
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const e = require('express');
 
 var PORT = process.env.PORT || 8089;
@@ -29,8 +29,8 @@ totalVotes = 0;
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ type: '*/*' }));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json({type: '*/*'}));
 
 var router = express.Router();
 
@@ -61,9 +61,9 @@ router.route('/auth/new').get(function (request, response) {
 
         var date = "22-APR-21"
 
-        connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" + 
-        "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
-            { outFormat: oracledb.OBJECT }, 
+        connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" +
+            "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -71,22 +71,20 @@ router.route('/auth/new').get(function (request, response) {
                     doRelease(connection);
                     return;
                 }
+                connection.execute("INSERT INTO Guest (gid)" +
+                    "VALUES(:vid)", [vid],
+                    {outFormat: oracledb.OBJECT},
+                    function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            response.status(500).send("Error creating member");
+                            doRelease(connection);
+                            return;
+                        }
+                        response.json(vid);
+                        doRelease(connection);
+                    });
             });
-        
-        connection.execute("INSERT INTO Guest (gid)" +
-            "VALUES(:vid)", [vid],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating member");
-                    doRelease(connection);
-                    return;
-                }
-            });
-
-        response.json(vid);
-        doRelease(connection);
     });
 });
 
@@ -100,12 +98,12 @@ router.route('/auth/signup/:password').post(function (request, response) {
             return;
         }
         console.log("After connection");
-    
+
         user = request.body;
-    
+
         connection.execute("INSERT INTO Member (mid, email, password)" +
             "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -113,21 +111,19 @@ router.route('/auth/signup/:password').post(function (request, response) {
                     doRelease(connection);
                     return;
                 }
+                connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
+                    {outFormat: oracledb.OBJECT},
+                    function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            response.status(500).send("Error deleting guest when making member");
+                            doRelease(connection);
+                            return;
+                        }
+                        response.json(user.vid);
+                        doRelease(connection);
+                    });
             });
-    
-        connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error deleting guest when making member");
-                    doRelease(connection);
-                    return;
-                }
-            });
-    
-        response.json(user.vid);
-        doRelease(connection);
     });
 });
 
@@ -176,7 +172,7 @@ router.route('/user/:vid').get(function (request, response) {
         vid = request.params.vid;
 
         connection.execute("SELECT DISTINCT vid, name, experience, email FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -194,7 +190,7 @@ router.route('/user/:vid').get(function (request, response) {
                 }
                 response.json(User);
                 doRelease(connection);
-        });
+            });
     });
 });
 
@@ -229,29 +225,29 @@ router.route('/user/:id').delete(function (request, response) {
 // Edit a visitor's info. DONE
 router.route('/user/:vid').put(function (request, response) {
     console.log("EDIT VISITOR:" + request.params.vid);
-  oracledb.getConnection(connectionProperties, function (err, connection) {
-    if (err) {
-      console.error(err.message);
-      response.status(500).send("Error connecting to DB");
-      return;
-    }
-
-    var name = request.body.name;
-    var vid = request.params.vid;
-
-    connection.execute("UPDATE Visitor SET NAME=:name WHERE vid=:vid",
-      [name, vid],
-      function (err, result) {
+    oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
-          console.error(err.message);
-          response.status(500).send("Error updating visitor to DB");
-          doRelease(connection);
-          return;
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
         }
-        response.end();
-        doRelease(connection);
-      });
-  });
+
+        var name = request.body.name;
+        var vid = request.params.vid;
+
+        connection.execute("UPDATE Visitor SET NAME=:name WHERE vid=:vid",
+            [name, vid],
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error updating visitor to DB");
+                    doRelease(connection);
+                    return;
+                }
+                response.end();
+                doRelease(connection);
+            });
+    });
 });
 
 // Get only visitors with an experience threshold (Selection) DONE
@@ -265,7 +261,7 @@ router.route('/user').get(function (request, response) {
         }
         console.log("After connection");
         connection.execute("SELECT vid FROM Visitor WHERE experience >= 1000", {},
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -303,8 +299,7 @@ router.route('/post').post(function (request, response) {
 
         if (post.cid == "") {
             cid = uuidv4();
-        }
-        else {
+        } else {
             cid = post.cid;
         }
 
@@ -314,9 +309,9 @@ router.route('/post').post(function (request, response) {
         //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
         //     ('00' + date.getUTCDate()).slice(-2)
 
-            connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-                "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
-            { outFormat: oracledb.OBJECT },
+        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
+            "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -324,39 +319,39 @@ router.route('/post').post(function (request, response) {
                     doRelease(connection);
                     return;
                 }
+
+                connection.execute("INSERT INTO Post (pid, upvotes, downvotes title)" +
+                    "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
+                    {outFormat: oracledb.OBJECT},
+                    function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            response.status(500).send("Error creating Post");
+                            doRelease(connection);
+                            return;
+                        }
+                        // TODO: New attachment tables
+                        for (attachment in post.attachments) {
+                            attid = uuidv4();
+
+                            connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
+                                "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
+                                {outFormat: oracledb.OBJECT},
+                                function (err, result) {
+                                    if (err) {
+                                        console.error(err.message);
+                                        response.status(500).send("Error creating attachment log");
+                                        doRelease(connection);
+                                        return;
+                                    }
+                                    response.end();
+                                    doRelease(connection);
+                                });
+                        }
+                    });
             });
 
-        connection.execute("INSERT INTO Post (pid, upvotes, downvotes title)" +
-            "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating Post");
-                    doRelease(connection);
-                    return;
-                }
-            });
 
-        // TODO: New attachment tables
-        for (attachment in post.attachments) {
-            attid = uuidv4();
-
-            connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
-            "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating attachment log");
-                    doRelease(connection);
-                    return;
-                }
-            });
-        }
-
-        response.end();
-        doRelease(connection);
     });
 });
 
@@ -398,9 +393,9 @@ router.route('/posts/recom/:mode').get(function (request, response) {
             return;
         }
         console.log("After connection");
-    
+
         connection.execute("SELECT PID FROM POST", {},
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -433,7 +428,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
         vid = request.params.vid;
 
         connection.execute("SELECT cid FROM UserContent WHERE mid = :cid", [vid],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -462,15 +457,15 @@ router.route('/post/:cid').get(function (request, response) {
             return;
         }
         console.log("After connection");
-    
+
         cid = request.params.cid;
 
         finalPost = {};
         attach = [];
-    
+
 
         connection.execute("SELECT DISTINCT cid, title, vid, name, upvotes, downvotes FROM Visitor v, UserContent u, Post p WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -481,35 +476,45 @@ router.route('/post/:cid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 element = result.rows[0];
 
-                Post = {
-                    cid: element["PID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"])
-                }
+                // Post = {
+                //     cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
+                //     engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"])
+                // }
 
-                finalPost = Post;
-        });
+                finalPost.cid = element["CID"];
+                finalPost.title = element["TITLE"];
+                finalPost.authorVid = element["VID"];
+                finalPost.authorName = element["NAME"];
+                finalPost.engagement = 0.5;
+                finalPost.perception = element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]);
+                finalPost.attachments = [];
 
-        connection.execute("SELECT attid, type, content FROM Attachment WHERE pid = :cid", [cid],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                element = result.rows[0];
+                console.log("-----------------------------------")
+                console.log(finalPost)
 
-                result.rows.forEach(function (element) {
-                    attach.push({ attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"] });
-                }, this);
+                connection.execute("SELECT attid, type, content FROM Attachment WHERE pid = :cid", [cid],
+                    {outFormat: oracledb.OBJECT},
+                    function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            response.status(500).send("Error getting data from DB");
+                            doRelease(connection);
+                            return;
+                        }
+                        console.log("RESULTSET:" + JSON.stringify(result));
+                        element = result.rows[0];
+
+                        result.rows.forEach(function (element) {
+                            attach.push({attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"]});
+                        }, this);
+
+                        finalPost.attachments = attach;
+                        console.log("FINAL POST:" + JSON.stringify(finalPost))
+
+                        response.json(finalPost);
+                        doRelease(connection);
+                    });
             });
-
-        finalPost.attachments = attach;
-
-        response.json(finalPost);
-        doRelease(connection);
     });
 });
 
@@ -586,7 +591,7 @@ router.route('attachment/:attid').get(function (request, response) {
         attid = request.params.attid;
 
         connection.execute("SELECT * FROM Attachment WHERE attid = :attid", [attid],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -598,10 +603,10 @@ router.route('attachment/:attid').get(function (request, response) {
                 Attachment = {
                     attid: result.attid, type: result.type, content: result.content
                 }
-                
+
                 response.json(Attachment);
                 doRelease(connection);
-        });
+            });
     });
 });
 
@@ -628,7 +633,7 @@ router.route('/comment').post(function (request, response) {
         var date = '22-APR-22';
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
             "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, date],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -636,22 +641,20 @@ router.route('/comment').post(function (request, response) {
                     doRelease(connection);
                     return;
                 }
+                connection.execute("INSERT INTO UserComment (coid, votes, content)" +
+                    "VALUES(:coid, :votes, :content)", [cid, 0, comment.content],
+                    {outFormat: oracledb.OBJECT},
+                    function (err, result) {
+                        if (err) {
+                            console.error(err.message);
+                            response.status(500).send("Error creating comment");
+                            doRelease(connection);
+                            return;
+                        }
+                        response.json(cid);
+                        doRelease(connection);
+                    });
             });
-
-        connection.execute("INSERT INTO UserComment (coid, votes, content)" +
-            "VALUES(:coid, :votes, :content)", [cid, 0, comment.content],
-            { outFormat: oracledb.OBJECT },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating comment");
-                    doRelease(connection);
-                    return;
-                }
-            });
-
-        response.json(cid);
-        doRelease(connection);
     });
 });
 
@@ -723,7 +726,7 @@ router.route('/post/views/:cid').get(function (request, response) {
         cid = request.params.cid;
 
         connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -735,8 +738,13 @@ router.route('/post/views/:cid').get(function (request, response) {
                 element = result.rows[0];
 
                 Post = {
-                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: []
+                    cid: element["CID"],
+                    title: element["TITLE"],
+                    authorVid: element["VID"],
+                    authorName: element["NAME"],
+                    engagement: 0.5,
+                    perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]),
+                    attachments: []
                 }
                 response.json(Post);
                 doRelease(connection);
@@ -758,7 +766,7 @@ router.route('/post/view/:cid/:vid').get(function (request, response) {
         cid = request.params.cid;
 
         connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -770,8 +778,13 @@ router.route('/post/view/:cid/:vid').get(function (request, response) {
                 element = result.rows[0];
 
                 Post = {
-                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: []
+                    cid: element["CID"],
+                    title: element["TITLE"],
+                    authorVid: element["VID"],
+                    authorName: element["NAME"],
+                    engagement: 0.5,
+                    perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]),
+                    attachments: []
                 }
                 response.json(Post);
                 doRelease(connection);
