@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {dummyUser, User} from "../../../data/models/User";
 import {MainService} from "../../../data/main.service";
 import {AuthService} from "../../../data/auth.service";
@@ -13,14 +13,12 @@ import {ModProfileViewComponent} from "../mod-profile-view/mod-profile-view.comp
   templateUrl: './user-main-view.component.html',
   styleUrls: ['./user-main-view.component.css']
 })
-export class UserMainViewComponent {
+export class UserMainViewComponent implements OnInit{
   @Input() user: User = dummyUser();
   postCids: string[] = [];
 
   constructor(public mainService: MainService, public authService: AuthService, private dialog: MatDialog) {
-    mainService.getUserPostsCids(this.user.vid).subscribe(posts => {
-      this.postCids = posts;
-    })
+
   }
 
   showAuthView() {
@@ -37,5 +35,11 @@ export class UserMainViewComponent {
 
   modProfile() {
     this.dialog.open(ModProfileViewComponent, {data: this.user});
+  }
+
+  ngOnInit(): void {
+    this.mainService.getUserPostsCids(this.user.vid).subscribe(posts => {
+      this.postCids = posts;
+    })
   }
 }

@@ -60,7 +60,7 @@ export class NewPostViewComponent {
       }
       let newPost: Post = {
         authorName: user.name, authorVid: this.auth.selfVid, cid: "", engagement: 0, perception: 0,
-        title: this.title,
+        title: "new post",
         attachments: this.attachments
       }
       this.mainService.postPost(newPost)

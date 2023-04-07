@@ -107,7 +107,7 @@ export class MainService {
     }
     console.log(post)
     this.http.post<Post>(this.url + "post/", post).subscribe(res => {
-      console.log(res)
+      console.log("post posted")
     }, err => {
       alert("failed to post post");
     });
