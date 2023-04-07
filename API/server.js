@@ -59,11 +59,7 @@ router.route('/auth/new').get(function (request, response) {
 
         vid = uuidv4();
 
-        var date;
-        date = new Date();
-        date = date.getUTCFullYear() + '-' +
-            ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-            ('00' + date.getUTCDate()).slice(-2);
+        var date = "22-APR-21"
 
         connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" + 
         "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
