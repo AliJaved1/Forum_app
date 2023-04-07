@@ -74,7 +74,7 @@ router.route('/auth/new').get(function (request, response) {
 
         connection.execute("INSERT INTO Visitor (ip, experience, vid, datecreated)" +
             "VALUES(:ip, :experience, :vid, :time)", [0, 0, vid, date],
-            {outFormat: oracledb.OBJECT},
+            {outFormat: oracledb.OBJEC, autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -84,7 +84,7 @@ router.route('/auth/new').get(function (request, response) {
                 }
                 connection.execute("INSERT INTO Guest (gid)" +
                     "VALUES(:vid)", [vid],
-                    {outFormat: oracledb.OBJECT},
+                    { outFormat: oracledb.OBJECT, autoCommit: true },
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
@@ -114,7 +114,7 @@ router.route('/auth/signup/:password').post(function (request, response) {
 
         connection.execute("INSERT INTO Member (mid, email, password)" +
             "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
-            {outFormat: oracledb.OBJECT},
+            { outFormat: oracledb.OBJECT, autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -123,7 +123,7 @@ router.route('/auth/signup/:password').post(function (request, response) {
                     return;
                 }
                 connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
-                    {outFormat: oracledb.OBJECT},
+                    { outFormat: oracledb.OBJECT, autoCommit: true },
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
@@ -328,7 +328,7 @@ router.route('/post').post(function (request, response) {
         // UPDATED POST BACKEND
         connection.execute("INSERT INTO Post (pid, mid, upvotes, downvotes, title)" +
             "VALUES(:cid, :mid, :upvotes, :downvotes, :title)", [cid, post.authorVid, 0, 0, post.title],
-            {outFormat: oracledb.OBJECT},
+            { outFormat: oracledb.OBJECT, autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -342,7 +342,7 @@ router.route('/post').post(function (request, response) {
 
                     connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
                         "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-                        {outFormat: oracledb.OBJECT},
+                        { outFormat: oracledb.OBJECT, autoCommit: true },
                         function (err, result) {
                             if (err) {
                                 console.error(err.message);
@@ -373,7 +373,7 @@ router.route('/post').post(function (request, response) {
 
         connection.execute("INSERT INTO Post (pid, upvotes, downvotes,title)" +
             "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
-            {outFormat: oracledb.OBJECT},
+            { outFormat: oracledb.OBJECT, autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -387,7 +387,7 @@ router.route('/post').post(function (request, response) {
 
                     connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
                         "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-                        {outFormat: oracledb.OBJECT},
+                        { outFormat: oracledb.OBJECT, autoCommit: true },
                         function (err, result) {
                             if (err) {
                                 console.error(err.message);
@@ -518,6 +518,8 @@ router.route('/post/:cid').get(function (request, response) {
         attach = [];
 
         // updated post info --> UPDATEDPOSTINFO
+
+        result = await connection.execute();
 
         connection.execute("SELECT DISTINCT pid, mid, name, upvotes, downvotes FROM Visitor v, Post p WHERE p.pid = :cid AND p.mid = v.vid", [cid],
             {outFormat: oracledb.OBJECT},
@@ -676,7 +678,7 @@ router.route('/comment').post(function (request, response) {
 
         connection.execute("INSERT INTO UserComment (coid, pid, mid, upvotes, downvotes, content)" +
             "VALUES(:coid, :pid, :mid, :upvotes, :downvotes, :content", [cid, _____, comment.authorVid, 0, 0, comment.content],
-            {outFormat: oracledb.OBJECT},
+            { outFormat: oracledb.OBJECT, autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -698,7 +700,7 @@ router.route('/comment').post(function (request, response) {
         var date = '22-APR-22';
         connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
             "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, date],
-            {outFormat: oracledb.OBJECT},
+            { outFormat: oracledb.OBJECT, autoCommit: true },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -708,7 +710,7 @@ router.route('/comment').post(function (request, response) {
                 }
                 connection.execute("INSERT INTO UserComment (coid, votes, content)" +
                     "VALUES(:coid, :votes, :content)", [cid, 0, comment.content],
-                    {outFormat: oracledb.OBJECT},
+                    { outFormat: oracledb.OBJECT, autoCommit: true },
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
