@@ -179,7 +179,7 @@ router.route('/user/:vid').get(function (request, response) {
 
         vid = request.params.vid;
 
-        connection.execute("SELECT * FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
+        connection.execute("SELECT DISTINCT vid, name, experience, email FROM Visitor, Member, Guest WHERE vid = mid AND vid = :vid", [vid], // TODO: Change this query to only return needed things
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -305,7 +305,7 @@ router.route('/post').post(function (request, response) {
 
         post = request.body;
 
-        if (post.cid != "") {
+        if (post.cid == "") {
             cid = uuidv4();
         }
         else {
@@ -330,8 +330,8 @@ router.route('/post').post(function (request, response) {
                 }
             });
 
-        connection.execute("INSERT INTO Post (pid, votes, title)" +
-            "VALUES(:cid, :votes, :title)", [cid, 0, post.title],
+        connection.execute("INSERT INTO Post (pid, upvotes, downvotes title)" +
+            "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -456,7 +456,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
     });
 });
 
-// Get a post's information TODO
+// Get a post's information
 router.route('/post/:cid').get(function (request, response) {
     console.log("GET POST INFO");
     oracledb.getConnection(connectionProperties, function (err, connection) {
@@ -470,7 +470,7 @@ router.route('/post/:cid').get(function (request, response) {
         cid = request.params.cid;
     
 
-        connection.execute("SELECT cid, title, vid, name, attid, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content, type FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
@@ -482,9 +482,15 @@ router.route('/post/:cid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
                 element = result.rows[0];
 
+                attach = [];
+
+                result.rows.forEach(function (element) {
+                    attach.push({attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"]});
+                }, this);
+
                 Post = {
                     cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
-                    engagement: 0.5, perception: 0.5, attachments: []
+                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: attach
                 }
                 response.json(Post);
                 doRelease(connection);
@@ -493,9 +499,9 @@ router.route('/post/:cid').get(function (request, response) {
 });
 
 
-// Upvote a post. TODO
-router.route('/user/:id').put(function (request, response) {
-    console.log("EDIT POST:" + request.params.id);
+// Upvote a post.
+router.route('/perception/like/:cid/:vid').put(function (request, response) {
+    console.log("UPVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
             console.error(err.message);
@@ -504,14 +510,44 @@ router.route('/user/:id').put(function (request, response) {
         }
 
         var body = request.body;
-        var id = request.params.id;
+        var cid = request.params['cid'];
+        var vid = request.params['vid'];
 
-        connection.execute("UPDATE Post SET EMAIL=:email, ABOUT=:about WHERE mid=:id",
-            [body.name, body.about, id],
+        connection.execute("UPDATE Post SET upvotes = upvotes + 1 WHERE pid=:cid",
+            [cid],
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error updating employee to DB");
+                    response.status(500).send("Error upvoting");
+                    doRelease(connection);
+                    return;
+                }
+                response.end();
+                doRelease(connection);
+            });
+    });
+});
+
+// Downvote a post.
+router.route('/perception/dislike/:cid/:vid').put(function (request, response) {
+    console.log("UPVOTE POST:" + request.params.cid);
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+
+        var body = request.body;
+        var cid = request.params['cid'];
+        var vid = request.params['vid'];
+
+        connection.execute("UPDATE Post SET downvotes = downvotes + 1 WHERE pid=:cid",
+            [cid],
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error upvoting");
                     doRelease(connection);
                     return;
                 }
@@ -658,39 +694,75 @@ router.route('/comment/:cid').delete(function (request, response) {
     });
 });
 
-// Aggregation with Having: Select the MAX upvoted post TODO
-router.route('/postupvote/').post(function (request, response) {
-    console.log("RETURN MOST UPVOTED POST:");
+// Aggregation with GROUP BY
+router.route('/post/views/:cid').get(function (request, response) {
+    console.log("GET POST VIEWS");
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
             console.error(err.message);
             response.status(500).send("Error connecting to DB");
             return;
         }
+        console.log("After connection");
 
-        var mid = request.body;
+        cid = request.params.cid;
 
-        connection.execute("SELECT * FROM UserContent, Post GROUP BY mid )" +
-            "VALUES(EMPLOYEE_SEQ.NEXTVAL, :firstName,:lastName,:email,:phone,:birthdate,:title,:department)",
-            [body.firstName, body.lastName, body.email, body.phone, body.birthDate, body.title, body.dept],
+        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+            { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error saving employee to DB");
+                    response.status(500).send("Error getting data from DB");
                     doRelease(connection);
                     return;
                 }
-                response.end();
+                console.log("RESULTSET:" + JSON.stringify(result));
+                element = result.rows[0];
+
+                Post = {
+                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
+                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: []
+                }
+                response.json(Post);
                 doRelease(connection);
             });
     });
 });
 
-// Projection 
+// view a post
+router.route('/post/view/:cid/:vid').get(function (request, response) {
+    console.log("VIEW A POST");
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+        console.log("After connection");
 
-// Join
+        cid = request.params.cid;
 
-// Aggregation with GROUP BY
+        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
+            { outFormat: oracledb.OBJECT },
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error getting data from DB");
+                    doRelease(connection);
+                    return;
+                }
+                console.log("RESULTSET:" + JSON.stringify(result));
+                element = result.rows[0];
+
+                Post = {
+                    cid: element["CID"], title: element["TITLE"], authorVid: element["VID"], authorName: element["NAME"],
+                    engagement: 0.5, perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]), attachments: []
+                }
+                response.json(Post);
+                doRelease(connection);
+            });
+    });
+});
 
 // Nested Aggregation with GROUP BY
 
