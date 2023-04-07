@@ -59,11 +59,12 @@ export class NewPostViewComponent {
         return;
       }
       let newPost: Post = {
-        authorName: "", authorVid: this.auth.selfVid, cid: "", engagement: 0, perception: 0,
+        authorName: user.name, authorVid: this.auth.selfVid, cid: "", engagement: 0, perception: 0,
         title: this.title,
         attachments: this.attachments
       }
       this.mainService.postPost(newPost)
+      console.log("make post")
       this._bottomSheetRef.dismiss();
     });
   }

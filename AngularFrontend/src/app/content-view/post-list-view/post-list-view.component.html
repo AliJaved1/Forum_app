@@ -1,16 +1,16 @@
 <main>
-  <div id="loading" *ngIf="postIDs.length == 0">
+  <div id="loading" *ngIf="this.mainService.recommendPosts.length == 0">
     <mat-spinner></mat-spinner>
   </div>
   <div *ngIf="wideMode && loaded" id="wideMode">
     <div class="postsCol">
-      <app-post-view *ngFor="let postID of evenIndexPostIDs()" [postID]="postID"></app-post-view>
+      <app-post-view *ngFor="let postID of evenIndexPostIDs();index as i" [postID]="postID"></app-post-view>
     </div>
     <div class="postsCol">
-      <app-post-view *ngFor="let postID of oddIndexPostIDs()" [postID]="postID"></app-post-view>
+      <app-post-view *ngFor="let postID of oddIndexPostIDs();index as i" [postID]="postID"></app-post-view>
     </div>
   </div>
   <div *ngIf="!wideMode" class="postsCol">
-      <app-post-view *ngFor="let postID of postIDs" [postID]="postID"></app-post-view>
+      <app-post-view *ngFor="let postID of this.mainService.recommendPosts; index as i" [postID]="postID" [id]="i"></app-post-view>
   </div>
 </main>

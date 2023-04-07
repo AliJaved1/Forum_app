@@ -1,4 +1,4 @@
-import {Component, HostListener} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {MainService} from "../../data/main.service";
 import {Observable} from "rxjs";
 
@@ -7,20 +7,20 @@ import {Observable} from "rxjs";
   templateUrl: './post-list-view.component.html',
   styleUrls: ['./post-list-view.component.css']
 })
-export class PostListViewComponent {
-  postIDs: string[] = [];
+export class PostListViewComponent implements OnInit{
   wideMode = false;
   loaded = false;
 
-  constructor(private mainService: MainService) {
-    mainService.getRecommendPostsCids().subscribe((postIDs: string[]) => {
-      this.postIDs = postIDs;
+  constructor(public mainService: MainService) {}
+  ngOnInit(): void {
+    this.mainService.getRecommendPostsCids().subscribe((postIDs: string[]) => {
+      this.mainService.recommendPosts = postIDs;
       this.loaded = true;
-      console.log(this.postIDs)
+      console.log("recommendPosts:")
+      console.log(this.mainService.recommendPosts)
     });
     this.onResize(null);
   }
-
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     let viewportWidth = window.innerWidth;
@@ -28,10 +28,10 @@ export class PostListViewComponent {
   }
 
   oddIndexPostIDs(){
-    return this.postIDs.filter((id, index) => index % 2 === 0);
+    return this.mainService.recommendPosts.filter((id, index) => index % 2 === 0);
   };
 
   evenIndexPostIDs(){
-    return this.postIDs.filter((id, index) => index % 2 !== 0);
+    return this.mainService.recommendPosts.filter((id, index) => index % 2 !== 0);
   }
 }

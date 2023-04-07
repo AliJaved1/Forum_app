@@ -1,30 +1,34 @@
 <main>
   <mat-card-header>
-    <mat-card-title>{{user.experience}} XP</mat-card-title><br>
+    <mat-card-title>{{user.experience}} XP</mat-card-title>
+    <br>
     <mat-card-subtitle>Posts:</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content id="posts">
 
-      <div *ngFor="let postCid of postCids">
-        <app-post-view [postID]="postCid"></app-post-view>
-      </div>
+    <div *ngFor="let postCid of postCids">
+      <app-post-view [postID]="postCid"></app-post-view>
+    </div>
 
   </mat-card-content>
   <mat-divider></mat-divider>
   <div style="height: 10px"></div>
-  <mat-card-actions *ngIf="user.vid == authService.selfVid" style="justify-content: center">
-    <div *ngIf="user.isMember" style="margin-top: 9px">
-      <button mat-button (click)="modProfile()">Modify profile</button>
-      <button mat-button (click)="showFigEditView()">Edit Logo</button>
-    </div>
+  <div *ngIf="user.vid == authService.selfVid" style="display: flex; flex-direction: column">
+    <div style="display: flex;justify-content: center">
+      <div *ngIf="user.isMember">
+        <button mat-button (click)="modProfile()">Modify profile</button>
+        <button mat-button (click)="showFigEditView()">Edit Logo</button>
+      </div>
 
-    <div *ngIf="!user.isMember">
-      <button mat-stroked-button (click)="showSignUpView()">Signup</button>
+      <div *ngIf="!user.isMember">
+        <button mat-stroked-button (click)="showSignUpView()">Signup</button>
+      </div>
     </div>
-  </mat-card-actions>
-  <mat-card-actions style="width:100%;display: flex;align-items: center">
-    <div style="flex: 1"></div>
-    <button mat-flat-button color="primary" (click)="showAuthView()">Switch Account</button>
-    <div style="flex: 1"></div>
-  </mat-card-actions>
+    <div style="height: 10px"></div>
+    <div style="width:100%;display: flex;align-items: center">
+      <div style="flex: 1"></div>
+      <button mat-flat-button color="primary" (click)="showAuthView()">Switch Account</button>
+      <div style="flex: 1"></div>
+    </div>
+  </div>
 </main>

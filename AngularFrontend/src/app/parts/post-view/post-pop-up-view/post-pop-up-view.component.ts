@@ -12,9 +12,9 @@ import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
   templateUrl: './post-pop-up-view.component.html',
   styleUrls: ['./post-pop-up-view.component.css']
 })
-export class PostPopUpViewComponent {
+export class PostPopUpViewComponent{
   constructor(@Inject(MAT_DIALOG_DATA) public post: Post,  public auth: AuthService, public mainService: MainService, public dialog: MatDialog) {
-    //this.mainService.viewPost(this.post.cid, this.auth.selfVid);
+    //this.mainService.viewPost(this.post.cid, this.auth.selfVid); ngoninit
   }
 
   editPost() {

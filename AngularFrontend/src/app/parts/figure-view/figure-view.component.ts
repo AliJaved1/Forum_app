@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {dummyCustomFigure, to2dFigure} from "../../data/models/CustomFigure";
 import {MainService} from "../../data/main.service";
 
@@ -7,18 +7,22 @@ import {MainService} from "../../data/main.service";
   templateUrl: './figure-view.component.html',
   styleUrls: ['./figure-view.component.css']
 })
-export class FigureViewComponent {
+export class FigureViewComponent implements OnInit {
   @Input() fid: string = "fid";
   data: number[][] = dummyCustomFigure().data;
 
   constructor(private mainService: MainService) {
-    mainService.getCustomFigure(this.fid).subscribe(figure => {
+
+  }
+
+  ngOnInit(): void {
+    this.mainService.getCustomFigure(this.fid).subscribe(figure => {
       let fig2D = to2dFigure(figure);
       this.data = fig2D.data;
     });
   }
 
-  color_map = ["red","blue","grey","yellow","white","black","pink","orange", "lime", "green"]
+  color_map = ["red", "blue", "grey", "yellow", "white", "black", "pink", "orange", "lime", "green"]
 
   colorForCell(colorCode: number): string {
     return this.color_map[colorCode];

@@ -15,6 +15,8 @@ export class AuthService {
       let savedPassword = this.cookieService.get("password");
       this.mainService.login(savedVid, savedPassword).subscribe(
         (vID) => {
+          console.log("login successful, vid:")
+          console.log(vID)
           this.selfVid = vID;
         },
         (error) => {
@@ -22,6 +24,7 @@ export class AuthService {
           this.mainService.makeGuest().subscribe(
             (vID) => {
               this.selfVid = vID;
+              console.log("login failed, new user vid:")
               console.log(vID)
             },
             (error) => alert("login as guest also failed: " + error)
@@ -32,6 +35,8 @@ export class AuthService {
       // signup
       this.mainService.makeGuest().subscribe(
         (vID) => {
+          console.log("new user vid:")
+          console.log(vID)
           this.selfVid = vID;
         },
         (error) => alert("login as guest failed: " + error)

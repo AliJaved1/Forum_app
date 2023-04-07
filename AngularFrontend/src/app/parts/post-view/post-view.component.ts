@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {dummyPost, Post} from "../../data/models/Post";
 import {MatDialog} from "@angular/material/dialog";
 import {PostPopUpViewComponent} from "./post-pop-up-view/post-pop-up-view.component";
@@ -10,19 +10,31 @@ import {MainService} from "../../data/main.service";
   templateUrl: './post-view.component.html',
   styleUrls: ['./post-view.component.css']
 })
-export class PostViewComponent {
+export class PostViewComponent implements OnInit {
   @Input() postID: string = "9932";
+  @Input() id: number = 0;
   post: Post = dummyPost()
 
-  constructor(private dialog: MatDialog, mainService: MainService) {
-    mainService.getPost(this.postID).subscribe(
+
+  constructor(private dialog: MatDialog, private mainService: MainService) {
+
+  }
+
+  ngOnInit(): void {
+    console.log(this.id)
+    this.mainService.getPost(this.postID)
+      .subscribe(
       post => {
         this.post = post;
+        console.log("-----------")
+        console.log(this.post)
+        this.mainService.isFetching = false
       },
       error => {
         console.error(error)
       });
   }
+
 
   showPopupView() {
     this.dialog.open(PostPopUpViewComponent, {

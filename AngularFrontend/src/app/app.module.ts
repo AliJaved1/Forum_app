@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AppComponent} from './app.component';
 import {MainViewComponent} from './main-view/main-view.component';
 import {LogoViewComponent} from './logo-view/logo-view.component';
@@ -46,7 +46,6 @@ import { FigEditViewComponent } from './parts/figure-view/fig-edit-view/fig-edit
 import { PostEditViewComponent } from './parts/post-view/post-edit-view/post-edit-view.component';
 import { SignupViewComponent } from './parts/signup-view/signup-view.component';
 import { ModProfileViewComponent } from './parts/user-view/mod-profile-view/mod-profile-view.component';
-
 @NgModule({
   declarations: [
     AppComponent,

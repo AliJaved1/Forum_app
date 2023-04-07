@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {dummyUser, dummyUserWithVid, User} from "./models/User";
 import {HttpClient} from "@angular/common/http";
-import {catchError, delay, map, Observable, of} from "rxjs";
+import {catchError, delay, distinctUntilChanged, map, Observable, of, Subject, switchMap} from "rxjs";
 import {dummyPost, Post} from "./models/Post";
 import {Attachment, dummyAttachment} from "./models/Attachment";
 import {AuthService} from "./auth.service";
@@ -16,24 +16,31 @@ export class MainService {
   private testMode = false;
   private url = "http://localhost:8089/";
   public recommendMode = "0";
-  constructor(private http: HttpClient) { }
+  public recommendPosts: string[] = []
+  private getPostSubject = new Subject<string>();
+
+  lastReq = Date.now()
+  isFetching = false
+
+  constructor(private http: HttpClient) {
+  }
 
 
-  login(vID:string, password:string): Observable<string> {
+  login(vID: string, password: string): Observable<string> {
     if (this.testMode) {
       return of(vID).pipe(delay(600));
     }
     return this.http.get<string>(this.url + "auth/" + vID + "/" + password);
   }
 
-  makeGuest(): Observable<string>  {
+  makeGuest(): Observable<string> {
     if (this.testMode) {
       return of("123").pipe(delay(600));
     }
     return this.http.get<string>(this.url + "auth/new");
   }
 
-  signup(newUser: User, password:string): Observable<string> {
+  signup(newUser: User, password: string): Observable<string> {
     if (this.testMode) {
       return of("123").pipe(delay(600));
     }
@@ -42,21 +49,22 @@ export class MainService {
   }
 
 
-  getUser(vid:string): Observable<User> {
+  getUser(vid: string): Observable<User> {
+    vid = "17";
     if (this.testMode) {
       return of(dummyUserWithVid(vid)).pipe(delay(600));
     }
-    return this.http.get<User>(this.url + "user/" + vid).pipe(catchError (err => {
+    return this.http.get<User>(this.url + "user/" + vid).pipe(catchError(err => {
       alert("failed to fetch user data");
       return of(dummyUserWithVid(vid));
     }));
   }
 
-  updateUser(vid:string, user:User) {
+  updateUser(vid: string, user: User) {
     if (this.testMode) {
       return;
     }
-    return this.http.put<User>(this.url + "user/" + vid, user).pipe(catchError (err => {
+    return this.http.put<User>(this.url + "user/" + vid, user).pipe(catchError(err => {
       alert("failed to update user");
       return of();
     }));
@@ -66,82 +74,87 @@ export class MainService {
     if (this.testMode) {
       return of(["123", "456", "789", "78", "12", "45", "23", "63", "4362", "4532", "7644", "6453"]).pipe(delay(600));
     }
-    return this.http.get<string[]>(this.url + "posts/recom/" + this.recommendMode).pipe(catchError (err => {
+    return this.http.get<string[]>(this.url + "posts/recom/" + this.recommendMode).pipe(catchError(err => {
       alert("failed to fetch recommended posts");
       return of([]);
     }));
   }
 
-  getUserPostsCids(vid:string): Observable<string[]> {
+  getUserPostsCids(vid: string): Observable<string[]> {
     if (this.testMode) {
       return of(["123", "456", "789", "78", "12", "45", "23", "63"]).pipe(delay(600));
     }
-    return this.http.get<string[]>(this.url + "posts/user/" + vid).pipe(catchError (err => {
+    return this.http.get<string[]>(this.url + "posts/user/" + vid).pipe(catchError(err => {
       alert("failed to fetch user posts");
       return of([]);
     }));
   }
 
-  getPost(cid:string): Observable<Post> {
-    if (this.testMode) {
-      return of(dummyPost()).pipe(delay(600));
-    }
-    return this.http.get<Post>(this.url + "post/" + cid).pipe(catchError (err => {
-      alert("failed to fetch post: " + cid);
-      return of(dummyPost());
-    }));
-  }
+  getPost(cid: string): Observable<Post> {
+      if (this.testMode) {
+        return of(dummyPost()).pipe(delay(600));
+      }
 
-  postPost(post:Post) {
+      return this.http.get<Post>(this.url + "post/" + cid).pipe(catchError(err => {
+        // alert("failed to fetch post");
+        return of(dummyPost());
+      }))
+    }
+
+  postPost(post: Post) {
     if (this.testMode) {
       return;
     }
-    this.http.post<Post>(this.url + "post", post).pipe(catchError (err => {
+    console.log(post)
+    this.http.post<Post>(this.url + "post/", post).subscribe(res => {
+      console.log(res)
+    }, err => {
       alert("failed to post post");
-      return of();
-    }));
+    });
   }
 
-  deletePost(cid:string) {
+  deletePost(cid: string) {
     if (this.testMode) {
       return;
     }
-    this.http.delete(this.url + "post/" + cid).pipe(catchError (err => {
+    this.http.delete(this.url + "post/" + cid).subscribe(res => {
+      console.log(res)
+    }, err => {
       alert("failed to delete post");
-      return of();
-    }));
+    })
   }
-  likeContent(cid:string) {
+
+  likeContent(cid: string) {
     if (this.testMode) {
       return;
     }
-    this.http.get(this.url + "perception/like/" + cid).pipe(catchError (err => {
+    this.http.get(this.url + "perception/like/" + cid).pipe(catchError(err => {
       alert("failed to like content");
       return of();
     }));
   }
 
-  dislikeContent(cid:string, vid:string) {
+  dislikeContent(cid: string, vid: string) {
     if (this.testMode) {
       return;
     }
-    this.http.get(this.url + "perception/dislike/" + cid).pipe(catchError (err => {
+    this.http.get(this.url + "perception/dislike/" + cid).pipe(catchError(err => {
       alert("failed to dislike content");
       return of();
     }));
   }
 
-  getAttachment(attid:string): Observable<Attachment> {
+  getAttachment(attid: string): Observable<Attachment> {
     if (this.testMode) {
       return of(dummyAttachment()).pipe(delay(600));
     }
-    return this.http.get<Attachment>(this.url + "attachment/" + attid).pipe(catchError (err => {
+    return this.http.get<Attachment>(this.url + "attachment/" + attid).pipe(catchError(err => {
       alert("failed to fetch attachment");
       return of(dummyAttachment());
     }));
   }
 
-  getCustomFigure(fid:string): Observable<CustomFigure1D> {
+  getCustomFigure(fid: string): Observable<CustomFigure1D> {
     // if (this.testMode) {
     //   return of(dummyCustomFigure1D()).pipe(delay(600));
     // }
@@ -152,7 +165,7 @@ export class MainService {
     return of(dummyCustomFigure1D()).pipe(delay(600));
   }
 
-  postCustomFigure(figure2d:CustomFigure) {
+  postCustomFigure(figure2d: CustomFigure) {
     // if (this.testMode) {
     //   return;
     // }
@@ -164,7 +177,7 @@ export class MainService {
     return
   }
 
-  updateCustomFigure(figure2d:CustomFigure) {
+  updateCustomFigure(figure2d: CustomFigure) {
     // if (this.testMode) {
     //   return;
     // }
