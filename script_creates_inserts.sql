@@ -10,8 +10,8 @@ CREATE TABLE Guest
 
 CREATE TABLE Member 
 	(mid varchar(36) PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE,
-	email varchar(254) NOT NULL,
-	password varchar(254) NOT NULL);
+	email varchar(50) NOT NULL,
+	password varchar(50) NOT NULL);
 
 CREATE TABLE UserContent 
 	(cid varchar(36) PRIMARY KEY,
@@ -90,11 +90,11 @@ insert into post values('8168', 947, 5, 'Elden Ring most played game of 2022');
 insert into post values('554', 8811, 23, 'Why dont we have any moderators on this site!?!?');
 insert into post values('9002', 1000, 9923, 'Unpopular Opinion: water sucks');
 
-insert into attachment values('5', '158', 'image', 'www.image1.com');
+insert into attachment values('5', '158', 'image', 'https://imgur.com/gallery/UJ75m1c');
 insert into attachment values('6', '9932', 'link', 'www.github.com');
 insert into attachment values('7', '8168', 'video', 'www.youtube.com/watch?v=vS3_72Gb-bl');
 insert into attachment values('8', '554', 'text', 'I think that there are many things we should consider regarding laws relating to gambling.');
-insert into attachment values('9', '9002', 'image', 'www.image3.com');
+insert into attachment values('9', '9002', 'image', 'https://i.imgur.com/iJVlMUq.jpeg');
 
 insert into views values('10302', '158');
 insert into views values('10302', '9932');
