@@ -12,17 +12,18 @@ CREATE TABLE Member
 	(mid varchar(36) PRIMARY KEY REFERENCES Visitor(vid) ON DELETE CASCADE,
 	email varchar(50) NOT NULL,
 	password varchar(50) NOT NULL);
+	
 CREATE TABLE Post 
 	(pid varchar(36) PRIMARY KEY,
-	mid varchar(36) FOREIGN KEY REFERENCES Member(mid) ON DELETE CASCADE,
+	mid varchar(36) REFERENCES Member(mid) ON DELETE CASCADE,
 	upvotes int NOT NULL,
 	downvotes int NOT NULL,
 	title varchar(200) NOT NULL); 
 
 CREATE TABLE UserComment
 	(coid varchar(36) PRIMARY KEY,
-	pid varchar(36) FOREIGN KEY REFERENCES Post(pid) ON DELETE CASCADE,
-	mid varchar(36) FOREIGN KEY REFERENCES Member(mid) ON DELETE CASCADE,
+	pid varchar(36) REFERENCES Post(pid) ON DELETE CASCADE,
+	mid varchar(36) REFERENCES Member(mid) ON DELETE CASCADE,
 	upvotes int NOT NULL,
 	downvotes int NOT NULL, 
 	content varchar(200) NOT NULL);
