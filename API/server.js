@@ -255,38 +255,6 @@ router.route('/user/:vid').put(function (request, response) {
     });
 });
 
-// Get only visitors with an experience threshold (Selection) DONE
-router.route('/user').get(function (request, response) {
-    console.log("GET VISITORS WITH EXPERIENCE");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
-        connection.execute("SELECT vid FROM Visitor WHERE experience >= 1000", {},
-            {outFormat: oracledb.OBJECT},
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                var visitors = [];
-                result.rows.forEach(function (element) {
-                    visitors.push({
-                        vid: element.vid
-                    });
-                }, this);
-                response.json(visitors);
-                doRelease(connection);
-            });
-    });
-});
-
 /* POST ROUTES */
 
 // Create a post DONE except attid generation
@@ -302,12 +270,6 @@ router.route('/post').post(function (request, response) {
 
         post = request.body;
 
-        // if (post.cid == "") {
-        //     cid = uuidv4();
-        // } else {
-        //     cid = post.cid;
-        // }
-
         cid = uuidv4();
 
         console.log("vid: " + post.authorVid);
@@ -315,10 +277,6 @@ router.route('/post').post(function (request, response) {
 
 
         var date = '22-APR-22';
-        // date = new Date();
-        // date = date.getUTCFullYear() + '-' +
-        //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-        //     ('00' + date.getUTCDate()).slice(-2)
         console.log("date: " + date);
 
         // UPDATED POST BACKEND
@@ -352,53 +310,6 @@ router.route('/post').post(function (request, response) {
                 response.end();
                 doRelease(connection);
             });
-
-        // DO NOT NEED USERCONTENT -  IGNOREUSERCONTENTLINE 
-        // connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-        //     "VALUES(:cid, :mid, :datecreated)", [cid, post.authorVid, date],
-        //     {outFormat: oracledb.OBJECT},
-        //     function (err, result) {
-        //         if (err) {
-        //             console.error(err.message);
-        //             response.status(500).send("Error creating userContent");
-        //             doRelease(connection);
-        //             return;
-        //         }
-        //         response.end();
-        //         doRelease(connection);
-
-        // connection.execute("INSERT INTO Post (pid, upvotes, downvotes,title)" +
-        //     "VALUES(:cid, :upvotes, :downvotes, :title)", [cid, 0, 0, post.title],
-        //     { outFormat: oracledb.OBJECT, autoCommit: true },
-        //     function (err, result) {
-        //         if (err) {
-        //             console.error(err.message);
-        //             response.status(500).send("Error creating Post");
-        //             doRelease(connection);
-        //             return;
-        //         }
-        //         // TODO: New attachment tables
-        //         for (attachment in post.attachments) {
-        //             attid = uuidv4();
-        //
-        //             connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
-        //                 "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-        //                 { outFormat: oracledb.OBJECT, autoCommit: true },
-        //                 function (err, result) {
-        //                     if (err) {
-        //                         console.error(err.message);
-        //                         response.status(500).send("Error creating attachment log");
-        //                         doRelease(connection);
-        //                         return;
-        //                     }
-        //                     response.end();
-        //                     doRelease(connection);
-        //                 });
-        //         }
-        //     });
-        // });
-
-
     });
 });
 
@@ -465,7 +376,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 });
         }
         else if (request.params.mode == '1') {
-            connection.execute("select p.pid from Post p group by p.pid having max(p.upvotes) >= ALL (select max(p1.upvotes) from post p1 group by pid);", {},
+            connection.execute("SELECT p.pid from Post p GROUP BY p.pid having MAX(p.upvotes) >= ALL (SELECT MAX(p1.upvotes) FROM post p1 GROUP BY pid)", {},
                 { outFormat: oracledb.OBJECT },
                 function (err, result) {
                     if (err) {
@@ -476,7 +387,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                     }
                     console.log("RESULTSET:" + JSON.stringify(result));
                     
-                    response.json(result.rows[0]);
+                    response.json(result.rows[0]["PID"]);
                     doRelease(connection);
                 });
         }
@@ -726,39 +637,6 @@ router.route('/comment').post(function (request, response) {
                 response.json(cid);
                 doRelease(connection);
             });
-
-        // OUTDATED CREATE COMMENT BELOW
-
-        // var date;
-        // date = new Date();
-        // date = date.getUTCFullYear() + '-' +
-        //     ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-        //     ('00' + date.getUTCDate()).slice(-2)
-        var date = '22-APR-22';
-        connection.execute("INSERT INTO UserContent (cid, mid, datecreated)" +
-            "VALUES(:cid, :mid, :datecreated)", [cid, comment.authorVid, date],
-            { outFormat: oracledb.OBJECT, autoCommit: true },
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error creating comment");
-                    doRelease(connection);
-                    return;
-                }
-                connection.execute("INSERT INTO UserComment (coid, votes, content)" +
-                    "VALUES(:coid, :votes, :content)", [cid, 0, comment.content],
-                    { outFormat: oracledb.OBJECT, autoCommit: true },
-                    function (err, result) {
-                        if (err) {
-                            console.error(err.message);
-                            response.status(500).send("Error creating comment");
-                            doRelease(connection);
-                            return;
-                        }
-                        response.json(cid);
-                        doRelease(connection);
-                    });
-            });
     });
 });
 
@@ -884,8 +762,6 @@ router.route('/posts/custom/:userinput').get(function (request, response) {
             });
     });
 });
-
-// Nested Aggregation with GROUP BY
 
 // Division
 
