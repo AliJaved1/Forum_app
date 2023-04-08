@@ -47,6 +47,7 @@ import { PostEditViewComponent } from './parts/post-view/post-edit-view/post-edi
 import { SignupViewComponent } from './parts/signup-view/signup-view.component';
 import { ModProfileViewComponent } from './parts/user-view/mod-profile-view/mod-profile-view.component';
 import { LetterViewComponent } from './logo-view/letter-view/letter-view.component';
+import { SpecialViewComponent } from './main-view/special-view/special-view.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -74,6 +75,7 @@ import { LetterViewComponent } from './logo-view/letter-view/letter-view.compone
     SignupViewComponent,
     ModProfileViewComponent,
     LetterViewComponent,
+    SpecialViewComponent,
   ],
     imports: [
         BrowserModule,

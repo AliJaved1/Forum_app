@@ -36,6 +36,8 @@ export class PostViewComponent implements OnInit {
           console.log("-----------")
           console.log(this.post)
           this.mainService.isFetching = false
+          this.post.engagement = Math.random()
+          this.post.perception = Math.random()
         },
         error => {
           this.ngOnInit()

@@ -177,6 +177,16 @@ export class MainService {
     }));
   }
 
+  getSpecialMembers(): Observable<string[]> {
+    if (this.testMode) {
+      return of(["123", "456", "789", "78", "12", "45", "23", "63", "4362", "4532", "7644", "6453"]).pipe(delay(600));
+    }
+    return this.http.get<string[]>(this.url + "users/special").pipe(catchError(err => {
+      console.log("failed to fetch members");
+      return of([]);
+    }));
+  }
+
   postCustomFigure(figure2d: CustomFigure) {
     // if (this.testMode) {
     //   return;
