@@ -24,8 +24,8 @@ export function dummyPost(): Post {
 
   return {
     cid: "123",
-    // title: randomWord() + " " + randomWord() + " " + randomWord(),
-    title: "This is a title",
+    title: randomWord() + " " + randomWord() + " " + randomWord(),
+    // title: "This is a title",
     authorVid: dummyAuthor.vid,
     authorName: dummyAuthor.name,
     engagement: Math.random(),

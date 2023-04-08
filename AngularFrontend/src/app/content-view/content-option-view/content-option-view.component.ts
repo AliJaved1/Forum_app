@@ -26,4 +26,12 @@ export class ContentOptionViewComponent implements OnInit{
     });
   }
 
+  customMode(){
+    let floor = prompt("Enter the lower bound of views");
+    if (floor == null) return;
+    this.main.getCustomRankedPostsCids(floor).subscribe((postIDs: string[]) => {
+      console.log(this.main.recommendPosts)
+      this.main.recommendPosts = [...postIDs];
+    })
+  }
 }

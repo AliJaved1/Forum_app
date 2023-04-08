@@ -21,18 +21,25 @@ export class PostViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //delay 0-1s to fetch post
+    setTimeout(() => {
+      this.fetchPost()
+    }, Math.random() * 1000);
+  }
+
+  fetchPost() {
     console.log(this.id)
     this.mainService.getPost(this.postID)
       .subscribe(
-      post => {
-        this.post = post;
-        console.log("-----------")
-        console.log(this.post)
-        this.mainService.isFetching = false
-      },
-      error => {
-        console.error(error)
-      });
+        post => {
+          this.post = post;
+          console.log("-----------")
+          console.log(this.post)
+          this.mainService.isFetching = false
+        },
+        error => {
+          this.ngOnInit()
+        });
   }
 
 

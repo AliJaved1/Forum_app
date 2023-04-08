@@ -50,12 +50,11 @@ export class MainService {
 
 
   getUser(vid: string): Observable<User> {
-    vid = "17";
     if (this.testMode) {
       return of(dummyUserWithVid(vid)).pipe(delay(600));
     }
     return this.http.get<User>(this.url + "user/" + vid).pipe(catchError(err => {
-      alert("failed to fetch user data");
+      console.log("failed to fetch user data");
       return of(dummyUserWithVid(vid));
     }));
   }
@@ -65,7 +64,7 @@ export class MainService {
       return;
     }
     return this.http.put<User>(this.url + "user/" + vid, user).pipe(catchError(err => {
-      alert("failed to update user");
+      console.log("failed to update user");
       return of();
     }));
   }
@@ -75,7 +74,7 @@ export class MainService {
       return of(["123", "456", "789", "78", "12", "45", "23", "63", "4362", "4532", "7644", "6453"]).pipe(delay(600));
     }
     return this.http.get<string[]>(this.url + "posts/recom/" + this.recommendMode).pipe(catchError(err => {
-      alert("failed to fetch recommended posts");
+      console.log("failed to fetch recommended posts");
       return of([]);
     }));
   }
@@ -85,7 +84,7 @@ export class MainService {
       return of(["123", "456", "789", "78", "12", "45", "23", "63"]).pipe(delay(600));
     }
     return this.http.get<string[]>(this.url + "posts/user/" + vid).pipe(catchError(err => {
-      alert("failed to fetch user posts");
+      console.log("failed to fetch user posts");
       return of([]);
     }));
   }
@@ -109,7 +108,7 @@ export class MainService {
     this.http.post<Post>(this.url + "post/", post).subscribe(res => {
       console.log("post posted")
     }, err => {
-      alert("failed to post post");
+      console.log("failed to post post");
     });
   }
 
@@ -120,7 +119,7 @@ export class MainService {
     this.http.delete(this.url + "post/" + cid).subscribe(res => {
       console.log("post deleted")
     }, err => {
-      alert("failed to delete post");
+      console.log("failed to delete post");
     })
   }
 
@@ -131,7 +130,7 @@ export class MainService {
     this.http.get(this.url + "perception/like/" + cid + "/" + vid).subscribe(res => {
       console.log("content liked")
     }, err => {
-      alert("failed to like content");
+      console.log("failed to like content");
     });
   }
 
@@ -142,7 +141,7 @@ export class MainService {
     this.http.get(this.url + "perception/dislike/" + cid + "/" + vid).subscribe(res => {
         console.log("content disliked")
       }, err => {
-        alert("failed to dislike content");
+        console.log("failed to dislike content");
       }
     );
   }
@@ -166,6 +165,16 @@ export class MainService {
     //   return of(dummyCustomFigure1D());
     // }));
     return of(dummyCustomFigure1D()).pipe(delay(600));
+  }
+
+  getCustomRankedPostsCids(lowestView: string): Observable<string[]> {
+    if (this.testMode) {
+      return of(["123", "456", "789", "78", "12", "45", "23", "63", "4362", "4532", "7644", "6453"]).pipe(delay(600));
+    }
+    return this.http.get<string[]>(this.url + "posts/custom/" + lowestView).pipe(catchError(err => {
+      console.log("failed to fetch ranked posts");
+      return of([]);
+    }));
   }
 
   postCustomFigure(figure2d: CustomFigure) {

@@ -1,8 +1,9 @@
 <main>
   <mat-chip-listbox aria-label="Fish selection">
     <mat-chip-option color="accent" selected (click)="changeMode('0')">Smart Ranking</mat-chip-option>
-    <mat-chip-option color="warn" (click)="changeMode('1')">New</mat-chip-option>
+    <mat-chip-option color="warn" (click)="changeMode('1')">Best</mat-chip-option>
     <mat-chip-option (click)="changeMode('2')">Top</mat-chip-option>
-    <mat-chip-option (click)="changeMode('3')">Controversial</mat-chip-option>
+<!--    <mat-chip-option (click)="changeMode('3')">Controversial</mat-chip-option>-->
+    <mat-chip-option (click)="customMode()">Custom</mat-chip-option>
   </mat-chip-listbox>
 </main>

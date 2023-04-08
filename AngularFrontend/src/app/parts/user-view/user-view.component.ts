@@ -8,7 +8,7 @@ import {MainService} from "../../data/main.service";
   styleUrls: ['./user-view.component.css']
 })
 export class UserViewComponent implements OnInit{
-  @Input() vID: string = "9932";
+  @Input() vID: string = "0";
   user: User = dummyUser();
   loadFigure = false;
 
@@ -17,12 +17,21 @@ export class UserViewComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    // if (this.vID == "0") {
+    //   setTimeout(() => {
+    //     this.ngOnInit();
+    //   }, 100);
+    //   return;
+    // }
+
     this.mainService.getUser(this.vID).subscribe(user => {
       console.log(user)
       this.user = user;
       setTimeout(() => {
         this.loadFigure = true;
       }, 400);
+    }, error => {
+      // this.ngOnInit();
     });
   }
 }

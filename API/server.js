@@ -397,6 +397,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                         doRelease(connection);
                         return;
                     }
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
                     console.log("RESULTSET:" + JSON.stringify(result));
 
                     if (result.rows.length == 0) {
@@ -404,7 +405,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                         doRelease(connection);
                     }
                     else {
-                        response.json(result.rows[0]["PID"]);
+                        response.json([result.rows[0]["PID"]]);
                         doRelease(connection);
                     }
                 });
