@@ -453,7 +453,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
         console.log("After connection");
 
         if (request.params.mode == '2') {
-            connection.execute("SELECT pid, count(pid) from Views GROUP BY pid ORDER BY count(pid) DESC;",
+            connection.execute("SELECT pid, COUNT(pid) FROM Views GROUP BY pid ORDER BY COUNT(pid) DESC", {},
                 { outFormat: oracledb.OBJECT },
                 function (err, result) {
                     if (err) {
@@ -839,6 +839,39 @@ router.route('/post/view/:cid/:vid').get(function (request, response) {
                 }
 
                 response.end();
+                doRelease(connection);
+            });
+    });
+});
+
+router.route('/posts/custom/:userinput').get(function (request, response) {
+    console.log("GET VIEWED POSTS");
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+        console.log("After connection");
+
+        input = request.params.userinput;
+
+        connection.execute("SELECT DISTINCT p.pid from Post p, Views v WHERE p.pid = v.pid GROUP BY p.pid HAVING COUNT(*) > :input", [input],
+            { outFormat: oracledb.OBJECT },
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error getting data from DB");
+                    doRelease(connection);
+                    return;
+                }
+                console.log("RESULTSET:" + JSON.stringify(result));
+                var posts = [];
+                result.rows.forEach(function (element) {
+                    posts.push(element["PID"]);
+                }, this);
+
+                response.json(posts);
                 doRelease(connection);
             });
     });
