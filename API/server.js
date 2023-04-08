@@ -811,7 +811,7 @@ router.route('/users/special').get(function (request, response) {
         }
         console.log("After connection");
 
-        connection.execute("SELECT v.name FROM Visitor V WHERE NOT EXISTS((SELECT P.pid FROM Post P) EXCEPT (SELECT w.pid FROM View w WHERE w.vid = v.vid));", [],
+        connection.execute("SELECT v.name FROM Visitor v WHERE NOT EXISTS((SELECT p.pid FROM Post p) MINUS (SELECT w.pid FROM Views w WHERE w.vid = v.vid));", [],
             { outFormat: oracledb.OBJECT },
             function (err, result) {
                 if (err) {
