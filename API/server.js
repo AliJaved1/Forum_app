@@ -452,7 +452,28 @@ router.route('/posts/recom/:mode').get(function (request, response) {
         }
         console.log("After connection");
 
-        connection.execute("SELECT PID FROM POST", {},
+        if (request.params.mode == '2') {
+            connection.execute("SELECT pid, count(pid) from Views GROUP BY pid ORDER BY count(pid) DESC;",
+                { outFormat: oracledb.OBJECT },
+                function (err, result) {
+                    if (err) {
+                        console.error(err.message);
+                        response.status(500).send("Error getting data from DB");
+                        doRelease(connection);
+                        return;
+                    }
+                    console.log("RESULTSET:" + JSON.stringify(result));
+                    var posts = [];
+                    result.rows.forEach(function (element) {
+                        posts.push(element["PID"]);
+                    }, this);
+
+                    response.json(posts);
+                    doRelease(connection);
+                });
+        }
+        else {
+            connection.execute("SELECT PID FROM POST", {},
             {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
@@ -468,7 +489,9 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 }, this);
                 response.json(posts);
                 doRelease(connection);
-            });
+            });    
+        }
+
     });
 });
 
@@ -790,45 +813,6 @@ router.route('/comment/:cid').delete(function (request, response) {
     });
 });
 
-// Aggregation with GROUP BY
-router.route('/post/views/:cid').get(function (request, response) {
-    console.log("GET POST VIEWS");
-    oracledb.getConnection(connectionProperties, function (err, connection) {
-        if (err) {
-            console.error(err.message);
-            response.status(500).send("Error connecting to DB");
-            return;
-        }
-        console.log("After connection");
-
-        cid = request.params.cid;
-
-        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
-            {outFormat: oracledb.OBJECT},
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                element = result.rows[0];
-
-                Post = {
-                    cid: element["CID"],
-                    title: element["TITLE"],
-                    authorVid: element["VID"],
-                    authorName: element["NAME"],
-                    engagement: 0.5,
-                    perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]),
-                    attachments: []
-                }
-                response.json(Post);
-                doRelease(connection);
-            });
-    });
-});
 
 // view a post
 router.route('/post/view/:cid/:vid').get(function (request, response) {
@@ -842,9 +826,10 @@ router.route('/post/view/:cid/:vid').get(function (request, response) {
         console.log("After connection");
 
         cid = request.params.cid;
+        vid = request.params.vid;
 
-        connection.execute("SELECT DISTINCT cid, title, vid, name, attid, upvotes, downvotes, content FROM Visitor v, UserContent u, Post p, Attachment a WHERE u.cid = :cid AND p.pid = u.cid AND u.mid = v.vid", [cid],
-            {outFormat: oracledb.OBJECT},
+        connection.execute("INSERT INTO Views VALUES(':vid', ':pid')", [vid, cid],
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -852,19 +837,8 @@ router.route('/post/view/:cid/:vid').get(function (request, response) {
                     doRelease(connection);
                     return;
                 }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                element = result.rows[0];
 
-                Post = {
-                    cid: element["CID"],
-                    title: element["TITLE"],
-                    authorVid: element["VID"],
-                    authorName: element["NAME"],
-                    engagement: 0.5,
-                    perception: element["UPVOTES"] / (element["DOWNVOTES"] + element["UPVOTES"]),
-                    attachments: []
-                }
-                response.json(Post);
+                response.end();
                 doRelease(connection);
             });
     });
