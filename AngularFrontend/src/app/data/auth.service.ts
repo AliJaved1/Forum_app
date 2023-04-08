@@ -26,6 +26,7 @@ export class AuthService {
     //           this.selfVid = vID;
     //           console.log("login failed, new user vid:")
     //           console.log(vID)
+    //           alert("signup as guest successful, vid: " + vID)
     //         },
     //         (error) => alert("login as guest also failed: " + error)
     //       );

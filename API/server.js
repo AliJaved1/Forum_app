@@ -76,7 +76,7 @@ router.route('/auth/new').get(function (request, response) {
                 }
                 connection.execute("INSERT INTO Guest (gid)" +
                     "VALUES(:vid)", [vid],
-                    { outFormat: oracledb.OBJECT, autoCommit: true },
+                    {outFormat: oracledb.OBJECT, autoCommit: true},
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
@@ -104,22 +104,23 @@ router.route('/auth/signup/:password').post(function (request, response) {
 
         user = request.body;
 
-        connection.execute("INSERT INTO Member (mid, email, password)" +
-            "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
-            { outFormat: oracledb.OBJECT, autoCommit: true },
+        connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
+            {outFormat: oracledb.OBJECT, autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
-                    response.status(500).send("Error creating member");
+                    response.status(500).send("Error deleting guest when making member");
                     doRelease(connection);
                     return;
                 }
-                connection.execute("DELETE FROM Guest WHERE gid = :vid", [user.vid],
-                    { outFormat: oracledb.OBJECT, autoCommit: true },
+
+                connection.execute("INSERT INTO Member (mid, email, password)" +
+                    "VALUES(:vid, :email, :password)", [vid, user.email, request.params.password],
+                    {outFormat: oracledb.OBJECT, autoCommit: true},
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
-                            response.status(500).send("Error deleting guest when making member");
+                            response.status(500).send("Error creating member");
                             doRelease(connection);
                             return;
                         }
@@ -127,6 +128,7 @@ router.route('/auth/signup/:password').post(function (request, response) {
                         doRelease(connection);
                     });
             });
+
     });
 });
 
@@ -186,12 +188,11 @@ router.route('/user/:vid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
 
                 element = result.rows[0];
-                
+
                 if (result.rows.length == 0) {
                     response.status(500).send("No rows found");
                     doRelease(connection);
-                }
-                else {
+                } else {
                     User = {
                         vid: element["VID"], isMember: true, name: element["NAME"], experience: element["EXPERIENCE"],
                         thumbnailID: "", email: element["EMAIL"], about: ""
@@ -218,7 +219,7 @@ router.route('/user/:id').delete(function (request, response) {
 
         connection.execute("DELETE FROM Visitor WHERE vid = :vid",
             [vid],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -247,7 +248,7 @@ router.route('/user/:vid').put(function (request, response) {
 
         connection.execute("UPDATE Visitor SET NAME=:name WHERE vid=:vid",
             [name, vid],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -288,7 +289,7 @@ router.route('/post').post(function (request, response) {
         // UPDATED POST BACKEND
         connection.execute("INSERT INTO Post (pid, mid, upvotes, downvotes, title)" +
             "VALUES(:cid, :mid, :upvotes, :downvotes, :title)", [cid, post.authorVid, 0, 0, post.title],
-            { outFormat: oracledb.OBJECT, autoCommit: true },
+            {outFormat: oracledb.OBJECT, autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -302,7 +303,7 @@ router.route('/post').post(function (request, response) {
 
                     connection.execute("INSERT INTO Attachment (attid, pid, type, content)" +
                         "VALUES(:attid, :pid, :type, :content)", [attid, cid, attachment.type, attachment.content],
-                        { outFormat: oracledb.OBJECT, autoCommit: true },
+                        {outFormat: oracledb.OBJECT, autoCommit: true},
                         function (err, result) {
                             if (err) {
                                 console.error(err.message);
@@ -336,7 +337,7 @@ router.route('/post/:cid').delete(function (request, response) {
         // will just delete the post based on post PID
         connection.execute("DELETE FROM Post WHERE pid = :cid",
             [cid],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -363,7 +364,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
 
         if (request.params.mode == '2') {
             connection.execute("SELECT pid, COUNT(pid) FROM Views GROUP BY pid ORDER BY COUNT(pid) DESC", {},
-                { outFormat: oracledb.OBJECT },
+                {outFormat: oracledb.OBJECT},
                 function (err, result) {
                     if (err) {
                         console.error(err.message);
@@ -376,8 +377,7 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                     if (result.rows.length == 0) {
                         response.status(500).send("No rows found");
                         doRelease(connection);
-                    }
-                    else {
+                    } else {
                         result.rows.forEach(function (element) {
                             posts.push(element["PID"]);
                         }, this);
@@ -386,10 +386,9 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                         doRelease(connection);
                     }
                 });
-        }
-        else if (request.params.mode == '1') {
+        } else if (request.params.mode == '1') {
             connection.execute("SELECT p.pid from Post p GROUP BY p.pid having MAX(p.upvotes) >= ALL (SELECT MAX(p1.upvotes) FROM post p1 GROUP BY pid)", {},
-                { outFormat: oracledb.OBJECT },
+                {outFormat: oracledb.OBJECT},
                 function (err, result) {
                     if (err) {
                         console.error(err.message);
@@ -403,37 +402,34 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                     if (result.rows.length == 0) {
                         response.status(500).send("No rows found");
                         doRelease(connection);
-                    }
-                    else {
+                    } else {
                         response.json([result.rows[0]["PID"]]);
                         doRelease(connection);
                     }
                 });
-        }
-        else {
+        } else {
             connection.execute("SELECT PID FROM POST", {},
-            {outFormat: oracledb.OBJECT},
-            function (err, result) {
-                if (err) {
-                    console.error(err.message);
-                    response.status(500).send("Error getting data from DB");
-                    doRelease(connection);
-                    return;
-                }
-                console.log("RESULTSET:" + JSON.stringify(result));
-                var posts = [];
-                if (result.rows.length == 0) {
-                    response.status(500).send("No rows found");
-                    doRelease(connection);
-                }
-                else {
-                    result.rows.forEach(function (element) {
-                        posts.push(element["PID"]);
-                    }, this);
-                    response.json(posts);
-                    doRelease(connection);
-                }
-            });    
+                {outFormat: oracledb.OBJECT},
+                function (err, result) {
+                    if (err) {
+                        console.error(err.message);
+                        response.status(500).send("Error getting data from DB");
+                        doRelease(connection);
+                        return;
+                    }
+                    console.log("RESULTSET:" + JSON.stringify(result));
+                    var posts = [];
+                    if (result.rows.length == 0) {
+                        response.status(500).send("No rows found");
+                        doRelease(connection);
+                    } else {
+                        result.rows.forEach(function (element) {
+                            posts.push(element["PID"]);
+                        }, this);
+                        response.json(posts);
+                        doRelease(connection);
+                    }
+                });
         }
 
     });
@@ -467,8 +463,7 @@ router.route('/posts/user/:vid').get(function (request, response) {
                 if (result.rows.length == 0) {
                     response.status(500).send("No rows found");
                     doRelease(connection);
-                }
-                else {
+                } else {
                     result.rows.forEach(function (element) {
                         posts.push(element["PID"]);
                     }, this);
@@ -520,7 +515,7 @@ router.route('/post/:cid').get(function (request, response) {
                 finalPost.attachments = [];
 
                 connection.execute("SELECT attid, type, content FROM Attachment WHERE pid = :cid", [cid],
-                    { outFormat: oracledb.OBJECT },
+                    {outFormat: oracledb.OBJECT},
                     function (err, result) {
                         if (err) {
                             console.error(err.message);
@@ -532,7 +527,7 @@ router.route('/post/:cid').get(function (request, response) {
                         element = result.rows[0];
 
                         result.rows.forEach(function (element) {
-                            attach.push({ attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"] });
+                            attach.push({attid: element["ATTID"], type: element["TYPE"], content: element["CONTENT"]});
                         }, this);
 
                         finalPost.attachments = attach;
@@ -547,7 +542,7 @@ router.route('/post/:cid').get(function (request, response) {
 
 
 // Upvote a post.
-router.route('/perception/like/:cid/:vid').put(function (request, response) {
+router.route('/perception/like/:cid/:vid').get(function (request, response) {
     console.log("UPVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -558,10 +553,11 @@ router.route('/perception/like/:cid/:vid').put(function (request, response) {
 
         var body = request.body;
         var cid = request.params.cid;
+        console.log(cid);
 
         connection.execute("UPDATE Post SET upvotes = upvotes + 1 WHERE pid=:cid",
             [cid],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -576,7 +572,7 @@ router.route('/perception/like/:cid/:vid').put(function (request, response) {
 });
 
 // Downvote a post.
-router.route('/perception/dislike/:cid/:vid').put(function (request, response) {
+router.route('/perception/dislike/:cid/:vid').get(function (request, response) {
     console.log("DOWNVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
@@ -586,12 +582,11 @@ router.route('/perception/dislike/:cid/:vid').put(function (request, response) {
         }
 
         var body = request.body;
-        var cid = request.params['cid'];
-        var vid = request.params['vid'];
+        var cid = request.params.cid;
 
         connection.execute("UPDATE Post SET downvotes = downvotes + 1 WHERE pid=:cid",
             [cid],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -657,7 +652,7 @@ router.route('/comment').post(function (request, response) {
 
         connection.execute("INSERT INTO UserComment (coid, pid, mid, upvotes, downvotes, content)" +
             "VALUES(:coid, :pid, :mid, :upvotes, :downvotes, :content", [cid, _____, comment.authorVid, 0, 0, comment.content],
-            { outFormat: oracledb.OBJECT, autoCommit: true },
+            {outFormat: oracledb.OBJECT, autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -686,7 +681,7 @@ router.route('/user/:id').put(function (request, response) {
 
         connection.execute("UPDATE UserComment SET CONTENT=:content WHERE coid=:id",
             [comment.content, id],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -716,7 +711,7 @@ router.route('/comment/:cid').delete(function (request, response) {
         var coid = request.params.id;
         connection.execute("DELETE FROM UserComment WHERE coid = :coid",
             [coid],
-            { autoCommit: true },
+            {autoCommit: true},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -774,7 +769,7 @@ router.route('/posts/custom/:userinput').get(function (request, response) {
         input = request.params.userinput;
 
         connection.execute("SELECT DISTINCT p.pid from Post p, Views v WHERE p.pid = v.pid GROUP BY p.pid HAVING COUNT(*) > :input", [input],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -787,8 +782,7 @@ router.route('/posts/custom/:userinput').get(function (request, response) {
                 if (result.rows.length == 0) {
                     response.status(500).send("No rows found");
                     doRelease(connection);
-                }
-                else {
+                } else {
                     result.rows.forEach(function (element) {
                         posts.push(element["PID"]);
                     }, this);
@@ -812,7 +806,7 @@ router.route('/users/special').get(function (request, response) {
         console.log("After connection");
 
         connection.execute("SELECT v.vid FROM Visitor V WHERE NOT EXISTS((SELECT P.pid FROM Post P) MINUS (SELECT w.pid FROM VIEWS w WHERE w.vid = v.vid))", [],
-            { outFormat: oracledb.OBJECT },
+            {outFormat: oracledb.OBJECT},
             function (err, result) {
                 if (err) {
                     console.error(err.message);
@@ -825,8 +819,7 @@ router.route('/users/special').get(function (request, response) {
                 if (result.rows.length == 0) {
                     response.status(500).send("No rows found");
                     doRelease(connection);
-                }
-                else {
+                } else {
                     result.rows.forEach(function (element) {
                         users.push(element["VID"]);
                     }, this);
