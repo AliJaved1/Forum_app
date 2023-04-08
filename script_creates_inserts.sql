@@ -1,3 +1,11 @@
+drop table ATTACHMENT cascade constraints;
+drop table GUEST cascade constraints;
+drop table MEMBER cascade constraints;
+drop table POST cascade constraints;
+drop table USERCOMMENT cascade constraints;
+drop table VIEWS cascade constraints;
+drop table VISITOR cascade constraints;
+
 CREATE TABLE Visitor 
 	(ip varchar(39),
 	experience int NOT NULL,
