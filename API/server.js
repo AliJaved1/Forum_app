@@ -801,6 +801,42 @@ router.route('/posts/custom/:userinput').get(function (request, response) {
 });
 
 // Division
+router.route('/users/special').get(function (request, response) {
+    console.log("GET USERS VIEWED ALL");
+    oracledb.getConnection(connectionProperties, function (err, connection) {
+        if (err) {
+            console.error(err.message);
+            response.status(500).send("Error connecting to DB");
+            return;
+        }
+        console.log("After connection");
+
+        connection.execute("SELECT v.name FROM Visitor V WHERE NOT EXISTS((SELECT P.pid FROM Post P) EXCEPT (SELECT w.pid FROM View w WHERE w.vid = v.vid));", [],
+            { outFormat: oracledb.OBJECT },
+            function (err, result) {
+                if (err) {
+                    console.error(err.message);
+                    response.status(500).send("Error getting data from DB");
+                    doRelease(connection);
+                    return;
+                }
+                console.log("RESULTSET:" + JSON.stringify(result));
+                var users = [];
+                if (result.rows.length == 0) {
+                    response.status(500).send("No rows found");
+                    doRelease(connection);
+                }
+                else {
+                    result.rows.forEach(function (element) {
+                        users.push(element["NAME"]);
+                    }, this);
+                }
+
+                response.json(users);
+                doRelease(connection);
+            });
+    });
+});
 
 app.use(express.static('static'));
 app.use('/', router);
