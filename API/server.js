@@ -186,13 +186,19 @@ router.route('/user/:vid').get(function (request, response) {
                 console.log("RESULTSET:" + JSON.stringify(result));
 
                 element = result.rows[0];
-
-                User = {
-                    vid: element["VID"], isMember: true, name: element["NAME"], experience: element["EXPERIENCE"],
-                    thumbnailID: "", email: element["EMAIL"], about: ""
+                
+                if (result.rows.length == 0) {
+                    response.status(500).send("No rows found");
+                    doRelease(connection);
                 }
-                response.json(User);
-                doRelease(connection);
+                else {
+                    User = {
+                        vid: element["VID"], isMember: true, name: element["NAME"], experience: element["EXPERIENCE"],
+                        thumbnailID: "", email: element["EMAIL"], about: ""
+                    }
+                    response.json(User);
+                    doRelease(connection);
+                }
             });
     });
 });
@@ -367,12 +373,18 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                     }
                     console.log("RESULTSET:" + JSON.stringify(result));
                     var posts = [];
-                    result.rows.forEach(function (element) {
-                        posts.push(element["PID"]);
-                    }, this);
+                    if (result.rows.length == 0) {
+                        response.status(500).send("No rows found");
+                        doRelease(connection);
+                    }
+                    else {
+                        result.rows.forEach(function (element) {
+                            posts.push(element["PID"]);
+                        }, this);
 
-                    response.json(posts);
-                    doRelease(connection);
+                        response.json(posts);
+                        doRelease(connection);
+                    }
                 });
         }
         else if (request.params.mode == '1') {
@@ -386,9 +398,15 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                         return;
                     }
                     console.log("RESULTSET:" + JSON.stringify(result));
-                    
-                    response.json(result.rows[0]["PID"]);
-                    doRelease(connection);
+
+                    if (result.rows.length == 0) {
+                        response.status(500).send("No rows found");
+                        doRelease(connection);
+                    }
+                    else {
+                        response.json(result.rows[0]["PID"]);
+                        doRelease(connection);
+                    }
                 });
         }
         else {
@@ -403,11 +421,17 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
-                result.rows.forEach(function (element) {
-                    posts.push(element["PID"]);
-                }, this);
-                response.json(posts);
-                doRelease(connection);
+                if (result.rows.length == 0) {
+                    response.status(500).send("No rows found");
+                    doRelease(connection);
+                }
+                else {
+                    result.rows.forEach(function (element) {
+                        posts.push(element["PID"]);
+                    }, this);
+                    response.json(posts);
+                    doRelease(connection);
+                }
             });    
         }
 
@@ -439,11 +463,17 @@ router.route('/posts/user/:vid').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
-                result.rows.forEach(function (element) {
-                    posts.push(element["PID"]);
-                }, this);
-                response.json(posts);
-                doRelease(connection);
+                if (result.rows.length == 0) {
+                    response.status(500).send("No rows found");
+                    doRelease(connection);
+                }
+                else {
+                    result.rows.forEach(function (element) {
+                        posts.push(element["PID"]);
+                    }, this);
+                    response.json(posts);
+                    doRelease(connection);
+                }
             });
     });
 });
@@ -546,7 +576,7 @@ router.route('/perception/like/:cid/:vid').put(function (request, response) {
 
 // Downvote a post.
 router.route('/perception/dislike/:cid/:vid').put(function (request, response) {
-    console.log("UPVOTE POST:" + request.params.cid);
+    console.log("DOWNVOTE POST:" + request.params.cid);
     oracledb.getConnection(connectionProperties, function (err, connection) {
         if (err) {
             console.error(err.message);
@@ -753,9 +783,15 @@ router.route('/posts/custom/:userinput').get(function (request, response) {
                 }
                 console.log("RESULTSET:" + JSON.stringify(result));
                 var posts = [];
-                result.rows.forEach(function (element) {
-                    posts.push(element["PID"]);
-                }, this);
+                if (result.rows.length == 0) {
+                    response.status(500).send("No rows found");
+                    doRelease(connection);
+                }
+                else {
+                    result.rows.forEach(function (element) {
+                        posts.push(element["PID"]);
+                    }, this);
+                }
 
                 response.json(posts);
                 doRelease(connection);
