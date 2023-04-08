@@ -31,17 +31,7 @@ totalVotes = 0;
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({type: '*/*'}));
-// app.use(async (req, res, next) => {
-//     if (req.currentRequest) {
-//         await req.currentRequest;
-//     }
-//     req.currentRequest = new Promise((resolve) => {
-//         setTimeout(() => {
-//             resolve();
-//         }, 100);
-//     });
-//     next();
-// });
+
 var router = express.Router();
 
 router.use(function (request, response, next) {
@@ -54,6 +44,8 @@ router.use(function (request, response, next) {
     next();
 });
 
+// Sanitization: User-provided data is never embedded directly into the SQL query and is instead "prepared" using the 
+// oracledb connection.execute() function and binded into the query when executed.
 
 /* POSTS ENDPOINTS*/
 
@@ -469,6 +461,22 @@ router.route('/posts/recom/:mode').get(function (request, response) {
                     }, this);
 
                     response.json(posts);
+                    doRelease(connection);
+                });
+        }
+        else if (request.params.mode == '1') {
+            connection.execute("select p.pid from Post p group by p.pid having max(p.upvotes) >= ALL (select max(p1.upvotes) from post p1 group by pid);", {},
+                { outFormat: oracledb.OBJECT },
+                function (err, result) {
+                    if (err) {
+                        console.error(err.message);
+                        response.status(500).send("Error getting data from DB");
+                        doRelease(connection);
+                        return;
+                    }
+                    console.log("RESULTSET:" + JSON.stringify(result));
+                    
+                    response.json(result.rows[0]);
                     doRelease(connection);
                 });
         }
