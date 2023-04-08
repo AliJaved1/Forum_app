@@ -92,6 +92,9 @@ insert into attachment values('9', '9002', 'image', 'https://i.imgur.com/iJVlMUq
 
 insert into views values('10302', '158');
 insert into views values('10302', '9932');
+insert into views values('10302', '8168');
+insert into views values('10302', '554');
+insert into views values('10302', '9002');
 insert into views values('778', '9932');
 insert into views values('41', '554');
 insert into views values('873', '9932');
